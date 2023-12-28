@@ -7,7 +7,7 @@ Characteristic Guidance Web UI is a tool that offers large guidance scale correc
 - Improved sample generation control at large-scale guidance
 - Compatible with existing sampling methods
 
-For a detailed overview of features and previews, please visit our project website: [CharacteristicGuidanceWebUI Project Website](https://scraed.github.io/CharacteristicGuidance/). 
+For a detailed overview of features and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
 
 ## Installation
 Follow these steps to install the CharacteristicGuidanceWebUI extension:
