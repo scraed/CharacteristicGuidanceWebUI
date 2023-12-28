@@ -6,7 +6,7 @@ Characteristic Guidance Web UI is a tool that offers large CFG scale correction 
 ## Features
 ![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.PNG?raw=true)
 
-- Improved sample generation control at CFG scale
+- Improved sample generation control at high CFG scale
 - Compatible with existing sampling methods
 
 For a detailed overview of features and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
