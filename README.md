@@ -29,12 +29,16 @@ Show some examples of how your tool improves the performance of diffusion models
 ## Contributing
 Guidelines for how others can contribute to your project. Include instructions for submitting pull requests, coding standards, and how to report bugs.
 
-## License
-Specify the license under which your project is released.
+## Citation
+If you utilize characteristic guidance in your research or projects, please consider citing our paper:
+```bibtex
+@misc{zheng2023characteristic,
+      title={Characteristic Guidance: Non-linear Correction for DDPM at Large Guidance Scale},
+      author={Candi Zheng and Yuan Lan},
+      year={2023},
+      eprint={2312.07586},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
 
-## Acknowledgements
-Mention any individuals, institutions, or resources that were instrumental in the development of your project.
-
-## Contact
-Provide contact information for users to reach out with questions or feedback.
 
