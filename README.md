@@ -20,22 +20,23 @@ Follow these steps to install the CharacteristicGuidanceWebUI extension:
 6. Proceed to the "Installed" tab. Here, click "Check for updates", followed by "Apply and restart UI" for the changes to take effect. Note: Use these buttons for future updates to the CharacteristicGuidanceWebUI as well.
 
 ## Usage
-The CharacteristicGuidanceWebUI features an interactive interface built with Gradio. 
+The Characteristic Guidance Web UI features an interactive interface for both txt2img and img2img mode. 
 ![Gradio UI for CharacteristicGuidanceWebUI](https://github.com/scraed/CharacteristicGuidanceWebUI/blob/main/CHGextension_pic.PNG?raw=true)
+
 Below are the parameters you can adjust to customize the behavior of the guidance correction:
 
 ### Basic Parameters
-- **Regularization Strength**: Range 0.0 to 10.0 (default: 1). Adjusts the strength of regularization, facilitating easier convergence and closer alignment with CFG (Classifier Free Guidance).
-- **Regularization Range Over Time**: Range 0.01 to 5.0 (default: 1). Modifies the regularization range over time, affecting convergence difficulty and the extent of correction.
-- **Max Num. Characteristic Iteration**: Range 1 to 50 (default: 30). Determines the maximum number of characteristic iterations, balancing speed and convergence quality.
-- **Num. Basis for Correction**: Range 1 to 6 (default: 1). Sets the number of bases for correction, influencing the amount of correction and convergence behavior.
-- **Reuse Correction of Previous Iteration**: Range 0.0 to 1.0 (default: 0.0). Controls the reuse of correction from previous iterations to reduce abrupt changes during generation.
+- **Regularization Strength**: Range 0.0 to 5.0 (default: 1). Adjusts the strength of regularization at the beginning of sampling, larger regularization means easier convergence and closer alignment with CFG (Classifier Free Guidance).
+- **Regularization Range Over Time**: Range 0.01 to 5.0 (default: 1). Modifies the range of time being regularized, larger time means slow decay in regularization strength hence more time steps being regularized, affecting convergence difficulty and the extent of correction.
+- **Max Num. Characteristic Iteration**: Range 1 to 50 (default: 30). Determines the maximum number of characteristic iterations per sampling time step.
+- **Num. Basis for Correction**: Range 1 to 6 (default: 1). Sets the number of bases for correction, influencing the amount of correction and convergence behavior. More basis means better quality but harder convergence
+- **Reuse Correction of Previous Iteration**: Range 0.0 to 1.0 (default: 0.0). Controls the reuse of correction from previous iterations to reduce abrupt changes during generation. Suppress Abrupt Changes During Generation.
 
 ### Advanced Parameters
 - **Log 10 Tolerance for Iteration Convergence**: Range -6 to -2 (default: -4). Adjusts the tolerance for iteration convergence, trading off between speed and image quality.
 - **Iteration Step Size**: Range 0 to 1 (default: 1.0). Sets the step size for each iteration, affecting the speed of convergence.
-- **Regularization Annealing Speed**: Range 0.0 to 1.0 (default: 0.4). Controls the speed of regularization annealing, potentially easing convergence.
-- **Regularization Annealing Strength**: Range 0.0 to 5 (default: 0.5). Determines the strength of regularization annealing, affecting the balance between annealing strength and convergence.
+- **Regularization Annealing Speed**: Range 0.0 to 1.0 (default: 0.4). Controls the speed of regularization annealing (We set regularization to 5 then let it decay to specified regularization strength, annealing speed determines how fast the decay rate). Smaller speed potentially easing convergence.
+- **Regularization Annealing Strength**: Range 0.0 to 5 (default: 0.5). Determines the how important regularization annealing is in characteristic guidance interations. Higher value means higher priority to bring regularization level to specified regularization strength. Affecting the balance between annealing and convergence.
 - **AA Iteration Memory Size**: Range 1 to 10 (default: 2). Specifies the memory size for AA (Anderson Acceleration) iterations, influencing convergence speed and stability.
 
 ### Activation
@@ -44,7 +45,7 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 ### Visualization and Testing
 - **Check Convergence Button**: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
 
-These parameters provide extensive control over the behavior and performance of the diffusion model, allowing for fine-tuning to achieve desired results. Experiment with different settings to find the optimal balance for your specific use case.
+In practice, convergence is not always guarantee. If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step. Please experiment with different settings, especially regularization strength and time range, to achieve better convergence for your specific use case.
 
 ## Examples
 Show some examples of how your tool improves the performance of diffusion models. Include images or links to results, if available.
