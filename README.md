@@ -4,9 +4,9 @@
 Characteristic Guidance Web UI is a tool that offers large guidance scale correction for the Stable Diffusion web UI, specifically designed for the AUTOMATIC1111 interface. This project aims at enhancing the performance and accuracy of diffusion models, especially at larger guidance scales.
 
 ## Features
-- Non-linear correction for diffusion models
 - Improved sample generation control at large-scale guidance
 - Compatible with existing sampling methods
+
 For a detailed overview of features and previews, please visit our project website: [CharacteristicGuidanceWebUI Project Website](https://scraed.github.io/CharacteristicGuidance/). 
 
 ## Installation
