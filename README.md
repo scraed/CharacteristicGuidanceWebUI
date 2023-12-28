@@ -55,12 +55,6 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 
 In practice, convergence is not always guarantee. If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step. Please experiment with different settings, especially regularization strength and time range, to achieve better convergence for your specific use case.
 
-## Examples
-Show some examples of how your tool improves the performance of diffusion models. Include images or links to results, if available.
-
-## Contributing
-Guidelines for how others can contribute to your project. Include instructions for submitting pull requests, coding standards, and how to report bugs.
-
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
 ```bibtex
