@@ -533,7 +533,7 @@ class ExtensionTemplateScript(scripts.Script):
                 with gr.Accordion('Characteristic Guidance', open=False):
                         reg_ini = gr.Slider(
                                 minimum=0.0,
-                                maximum=10.,
+                                maximum=5.,
                                 step=0.1,
                                 value=1,
                                 label="Regularization Strength ( → Easier Convergence, Closer to CFG)",
