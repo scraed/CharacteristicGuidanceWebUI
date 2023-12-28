@@ -1,13 +1,19 @@
 # Characteristic Guidance Web UI
 
 ## About
-Characteristic Guidance Web UI is a tool that offers large CFG scale correction for the Stable Diffusion web UI (AUTOMATIC1111). This project aims at enhancing the sampling and control quality of diffusion models at larger CFG guidance scale.
+Characteristic Guidance Web UI is a tool that offers large CFG scale correction for the Stable Diffusion web UI (AUTOMATIC1111), aims at enhancing the sampling and control quality of diffusion models at larger CFG guidance scale.
 
 ## Features
 - Improved sample generation control at CFG scale
 - Compatible with existing sampling methods
 
 For a detailed overview of features and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
+
+## Prerequisites
+Before installing and using the Characteristic Guidance Web UI, ensure that you have the following prerequisites met:
+
+- **Stable Diffusion WebUI (AUTOMATIC1111)**: Your system must have the [Stable Diffusion WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) by AUTOMATIC1111 installed. This interface is the foundation on which the Characteristic Guidance Web UI operates.
+- **Version Requirement**: The extension is developed for Stable Diffusion WebUI **v1.6.0 or higher**. It may works for previous versions but not guaranteed.
 
 ## Installation
 Follow these steps to install the CharacteristicGuidanceWebUI extension:
