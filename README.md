@@ -18,10 +18,6 @@ Follow these steps to install the CharacteristicGuidanceWebUI extension:
 4. Click on the "Install" button.
 5. After waiting for several seconds, a confirmation message should appear indicating successful installation: "Installed into stable-diffusion-webui\extensions\CharacteristicGuidanceWebUI. Use the Installed tab to restart".
 6. Proceed to the "Installed" tab. Here, click "Check for updates", followed by "Apply and restart UI" for the changes to take effect. Note: Use these buttons for future updates to the CharacteristicGuidanceWebUI as well.
-7. For the changes to be fully applied, you need to completely restart the A1111 web UI, including the terminal process. If you're unfamiliar with terminal operations, restarting your computer will achieve the same result.
-8. Download the necessary models as specified in the section below.
-9. Once the models are placed in the correct folder, you might need to refresh the UI to recognize the new models. The refresh button is located next to the "Model" dropdown menu.
-
 
 ## Usage
 Instructions on how to use the tool, including any necessary configuration and how to integrate it with the Stable Diffusion web UI.
