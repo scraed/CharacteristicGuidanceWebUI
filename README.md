@@ -31,6 +31,8 @@ Follow these steps to install the CharacteristicGuidanceWebUI extension:
 The Characteristic Guidance Web UI features an interactive interface for both txt2img and img2img mode. 
 ![Gradio UI for CharacteristicGuidanceWebUI](https://github.com/scraed/CharacteristicGuidanceWebUI/blob/main/CHGextension_pic.PNG?raw=true)
 
+The characteristic guidance is slow compared to classifier-free guidance. We recommend the user to generate image with classifier-free guidance at first, then try characteristic guidance with the same prompt and seed to enhance the image.
+
 Below are the parameters you can adjust to customize the behavior of the guidance correction:
 
 ### Basic Parameters
