@@ -1,7 +1,7 @@
-# CharacteristicGuidanceWebUI
+# Characteristic Guidance Web UI
 
 ## About
-CharacteristicGuidanceWebUI is a tool that offers large guidance scale correction for the Stable Diffusion web UI, specifically designed for the AUTOMATIC1111 interface. This project is part of a broader academic initiative aimed at enhancing the performance and accuracy of diffusion models, especially at larger guidance scales.
+Characteristic Guidance Web UI is a tool that offers large guidance scale correction for the Stable Diffusion web UI, specifically designed for the AUTOMATIC1111 interface. This project is part of a broader academic initiative aimed at enhancing the performance and accuracy of diffusion models, especially at larger guidance scales.
 
 ## Features
 - Non-linear correction for diffusion models
