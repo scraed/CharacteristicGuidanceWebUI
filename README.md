@@ -20,7 +20,9 @@ Follow these steps to install the CharacteristicGuidanceWebUI extension:
 6. Proceed to the "Installed" tab. Here, click "Check for updates", followed by "Apply and restart UI" for the changes to take effect. Note: Use these buttons for future updates to the CharacteristicGuidanceWebUI as well.
 
 ## Usage
-The CharacteristicGuidanceWebUI features an interactive interface built with Gradio. Below are the parameters you can adjust to customize the behavior of the guidance correction:
+The CharacteristicGuidanceWebUI features an interactive interface built with Gradio. 
+![Gradio UI for CharacteristicGuidanceWebUI](https://github.com/scraed/CharacteristicGuidanceWebUI/blob/main/CHGextension_pic.PNG?raw=true)
+Below are the parameters you can adjust to customize the behavior of the guidance correction:
 
 ### Basic Parameters
 - **Regularization Strength**: Range 0.0 to 10.0 (default: 1). Adjusts the strength of regularization, facilitating easier convergence and closer alignment with CFG (Classifier Free Guidance).
