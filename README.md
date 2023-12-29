@@ -10,7 +10,7 @@ Characteristic Guidance Web UI is a tool that offers large CFG scale correction 
 - Improved sample generation control at high CFG scale
 - Compatible with existing sampling methods
 
-For a detailed overview of features and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
+For more information and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
 
 ## Prerequisites
 Before installing and using the Characteristic Guidance Web UI, ensure that you have the following prerequisites met:
