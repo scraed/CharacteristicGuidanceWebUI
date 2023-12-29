@@ -55,7 +55,7 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 ### Visualization and Testing
 - **Check Convergence Button**: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
 
-In practice, convergence is not always guarantee. If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step. Please experiment with different settings, especially regularization strength and time range, to achieve better convergence for your specific use case.
+In practice, convergence is not always guaranteed. If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step. Please experiment with different settings, especially regularization strength and time range, to achieve better convergence for your specific use case.
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
