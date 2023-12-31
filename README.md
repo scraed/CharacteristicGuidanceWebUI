@@ -60,7 +60,7 @@ In practice, convergence is not always guaranteed. If characteristic guidance fa
 
 ### Compatibility
 
-This extension is presently incompatible with ControlNet; however, we are committed to developing a solution in the future.
+This extension is presently incompatible with ControlNet (Iteration wouldn't converge if ControlNet is active); however, we are committed to developing a solution in the future.
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
