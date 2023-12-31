@@ -58,6 +58,10 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 
 In practice, convergence is not always guaranteed. If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step. Please experiment with different settings, especially regularization strength and time range, to achieve better convergence for your specific use case.
 
+### Compatibility
+
+This extension is presently incompatible with ControlNet; however, we are committed to developing a solution in the future.
+
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
 ```bibtex
