@@ -19,7 +19,7 @@ Before installing and using the Characteristic Guidance Web UI, ensure that you 
 - **Version Requirement**: The extension is developed for Stable Diffusion WebUI **v1.6.0 or higher**. It may works for previous versions but not guaranteed.
 
 ## Installation
-Follow these steps to install the CharacteristicGuidanceWebUI extension:
+Follow these steps to install the Characteristic Guidance Web UI extension:
 
 1. Navigate to the "Extensions" tab in the Stable Diffusion web UI.
 2. In the "Extensions" tab, select the "Install from URL" option.
