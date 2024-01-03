@@ -663,6 +663,25 @@ class ExtensionTemplateScript(scripts.Script):
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
         return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox]
 
+    def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
+                      checkbox, **kwargs):
+        if checkbox:
+            # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
+            # write parameters to extra_generation_params["CHG"] as json dict with double quotes replaced by single quotes
+            parameters = {
+                "Str": reg_ini,
+                "Range": reg_range,
+                "Max": ite,
+                "Basis": noise_base,
+                "Reuse": chara_decay,
+                "Tolerance": res,
+                "Step": lr,
+                "Anneal Speed": reg_size,
+                "Anneal Str": reg_w,
+                "AA": aa_dim
+            }
+            p.extra_generation_params["CHG"] = json.dumps(parameters).replace('"', "'")
+
     # Extension main process
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
@@ -693,21 +712,6 @@ class ExtensionTemplateScript(scripts.Script):
                     try:
                         result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
                                         prompts)
-
-                        # write parameters to extra_generation_params["CHG"] as json dict with double quotes replaced by single quotes
-                        parameters = {
-                            "Str": reg_ini,
-                            "Range": reg_range,
-                            "Max": ite,
-                            "Basis": noise_base,
-                            "Reuse": chara_decay,
-                            "Tolerance": res,
-                            "Step": lr,
-                            "Anneal Speed": reg_size,
-                            "Anneal Str": reg_w,
-                            "AA": aa_dim
-                        }
-                        p.extra_generation_params["CHG"] = json.dumps(parameters).replace('"', "'")
 
                     except Exception as e:
                         raise e
