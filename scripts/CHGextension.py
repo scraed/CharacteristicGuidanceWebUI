@@ -1,11 +1,6 @@
 import modules.scripts as scripts
 import gradio as gr
-import os
-import sys
-from modules import images, script_callbacks
-from modules.processing import process_images, Processed
-from modules.processing import Processed
-from modules.shared import opts, cmd_opts, state
+
 import io
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -23,7 +18,6 @@ import k_diffusion.utils as utils
 from k_diffusion.external import CompVisVDenoiser, CompVisDenoiser
 from modules.sd_samplers_timesteps import CompVisTimestepsDenoiser, CompVisTimestepsVDenoiser
 from modules.sd_samplers_cfg_denoiser import CFGDenoiser, catenate_conds, subscript_cond, pad_cond
-import modules.processing as processing
 
 
 class CHGDenoiser(CFGDenoiser):
