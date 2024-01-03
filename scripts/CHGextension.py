@@ -559,14 +559,14 @@ class ExtensionTemplateScript(scripts.Script):
                 minimum=0.0,
                 maximum=5.,
                 step=0.1,
-                value=1,
+                value=1.,
                 label="Regularization Strength ( → Easier Convergence, Closer to CFG)",
             )
             reg_range = gr.Slider(
                 minimum=0.01,
                 maximum=5.,
                 step=0.01,
-                value=1,
+                value=1.,
                 label="Regularization Range Over Time ( ← Harder Convergence, More Correction)",
             )
             ite = gr.Slider(
@@ -595,7 +595,7 @@ class ExtensionTemplateScript(scripts.Script):
                     minimum=-6,
                     maximum=-2,
                     step=0.1,
-                    value=-4,
+                    value=-4.,
                     label="Log 10 Tolerance for Iteration Convergence ( → Faster Convergence, Lower Quality)",
                 )
                 lr = gr.Slider(
