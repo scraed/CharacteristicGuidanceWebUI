@@ -2,6 +2,7 @@ import modules.scripts as scripts
 import gradio as gr
 
 import io
+import json
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
@@ -18,6 +19,18 @@ import k_diffusion.utils as utils
 from k_diffusion.external import CompVisVDenoiser, CompVisDenoiser
 from modules.sd_samplers_timesteps import CompVisTimestepsDenoiser, CompVisTimestepsVDenoiser
 from modules.sd_samplers_cfg_denoiser import CFGDenoiser, catenate_conds, subscript_cond, pad_cond
+from modules import script_callbacks
+
+
+def pares_infotext(infotext, params):
+    # parse infotext decode json string
+    try:
+        params['CHG'] = json.loads(params['CHG'].replace("'", '"'))
+    except Exception:
+        pass
+
+
+script_callbacks.on_infotext_pasted(pares_infotext)
 
 
 class CHGDenoiser(CFGDenoiser):
@@ -627,6 +640,26 @@ class ExtensionTemplateScript(scripts.Script):
             #        image = gr.Image(show_label=False)
             #        blocks.load(fn=self.update_plot, inputs=None, outputs=image,
             #                        show_progress=False, every=5)
+
+        def get_chg_parameter(key, default=None):
+            def get_parameters(d):
+                return d.get('CHG', {}).get(key, default)
+            return get_parameters
+
+        self.infotext_fields = [
+            (checkbox, lambda d: 'CHG' in d),
+            (reg_ini, get_chg_parameter('Str')),
+            (reg_range, get_chg_parameter('Range')),
+            (ite, get_chg_parameter('Max')),
+            (noise_base, get_chg_parameter('Basis')),
+            (chara_decay, get_chg_parameter('Reuse')),
+            (res, get_chg_parameter('Tolerance')),
+            (lr, get_chg_parameter('Step')),
+            (reg_size, get_chg_parameter('Anneal Speed')),
+            (reg_w, get_chg_parameter('Anneal Str')),
+            (aa_dim, get_chg_parameter('AA')),
+        ]
+
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
         return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox]
 
@@ -660,17 +693,22 @@ class ExtensionTemplateScript(scripts.Script):
                     try:
                         result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
                                         prompts)
-                        paranames = ["Characteristic Guidance", "Regularization Strength",
-                                     "Regularization Range Over Time",
-                                     "Max Num. Characteristic Iteration", "Num. Basis for Correction",
-                                     "Reuse Correction of Previous Iteration",
-                                     "Log 10 Tolerance for Iteration Convergence", "Iteration Step Size",
-                                     "Regularization Annealing Speed",
-                                     "Regularization Annealing Strength", "AA Iteration Memory Size"]
-                        paravalues = [checkbox, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size,
-                                      reg_w, aa_dim]
-                        for i in range(len(paranames)):
-                            p.extra_generation_params["(CHG) " + paranames[i]] = paravalues[i]
+
+                        # write parameters to extra_generation_params["CHG"] as json dict with double quotes replaced by single quotes
+                        parameters = {
+                            "Str": reg_ini,
+                            "Range": reg_range,
+                            "Max": ite,
+                            "Basis": noise_base,
+                            "Reuse": chara_decay,
+                            "Tolerance": res,
+                            "Step": lr,
+                            "Anneal Speed": reg_size,
+                            "Anneal Str": reg_w,
+                            "AA": aa_dim
+                        }
+                        p.extra_generation_params["CHG"] = json.dumps(parameters).replace('"', "'")
+
                     except Exception as e:
                         raise e
                     finally:
