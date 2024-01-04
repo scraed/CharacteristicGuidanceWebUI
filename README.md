@@ -65,7 +65,7 @@ This extension is presently incompatible with ControlNet (Iteration wouldn't con
 
 ### Updates
 
-Now the infotext can be read by the UI thanks to @w-e-w , see how to use at this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1). 
+Now the infotext can be read by the UI thanks to [@w-e-w](https://github.com/w-e-w) , see how to use at this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1). 
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
