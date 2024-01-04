@@ -5,6 +5,7 @@ Characteristic Guidance Web UI is a tool that offers theroy-backed high CFG scal
 
 ## Features
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.PNG?raw=true)
+![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.PNG?raw=true)
 ![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.PNG?raw=true)
 
 - Improved sample generation control at high CFG scale
@@ -61,6 +62,10 @@ In practice, convergence is not always guaranteed. If characteristic guidance fa
 ### Compatibility
 
 This extension is presently incompatible with ControlNet (Iteration wouldn't converge if ControlNet is active); however, we are committed to developing a solution in the future.
+
+### Updates
+
+Now the infotext can be read by the UI thanks to @w-e-w , see how to use at this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1). 
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
