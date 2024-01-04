@@ -648,16 +648,16 @@ class ExtensionTemplateScript(scripts.Script):
 
         self.infotext_fields = [
             (checkbox, lambda d: 'CHG' in d),
-            (reg_ini, get_chg_parameter('Str')),
-            (reg_range, get_chg_parameter('Range')),
-            (ite, get_chg_parameter('Max')),
-            (noise_base, get_chg_parameter('Basis')),
+            (reg_ini, get_chg_parameter('RegS')),
+            (reg_range, get_chg_parameter('RegR')),
+            (ite, get_chg_parameter('MaxI')),
+            (noise_base, get_chg_parameter('NBasis')),
             (chara_decay, get_chg_parameter('Reuse')),
-            (res, get_chg_parameter('Tolerance')),
-            (lr, get_chg_parameter('Step')),
-            (reg_size, get_chg_parameter('Anneal Speed')),
-            (reg_w, get_chg_parameter('Anneal Str')),
-            (aa_dim, get_chg_parameter('AA')),
+            (res, get_chg_parameter('Tol')),
+            (lr, get_chg_parameter('IteSS')),
+            (reg_size, get_chg_parameter('ASpeed')),
+            (reg_w, get_chg_parameter('AStrength')),
+            (aa_dim, get_chg_parameter('AADim')),
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
@@ -669,16 +669,16 @@ class ExtensionTemplateScript(scripts.Script):
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double quotes replaced by single quotes
             parameters = {
-                "Str": reg_ini,
-                "Range": reg_range,
-                "Max": ite,
-                "Basis": noise_base,
-                "Reuse": chara_decay,
-                "Tolerance": res,
-                "Step": lr,
-                "Anneal Speed": reg_size,
-                "Anneal Str": reg_w,
-                "AA": aa_dim
+                'RegS': reg_ini,
+                'RegR': reg_range,
+                'MaxI': ite,
+                'NBasis': noise_base,
+                'Reuse': chara_decay,
+                'Tol': res,
+                'IteSS': lr,
+                'ASpeed': reg_size,
+                'AStrength': reg_w,
+                'AADim': aa_dim
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).replace('"', "'")
 
