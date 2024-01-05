@@ -20,7 +20,7 @@ from k_diffusion.external import CompVisVDenoiser, CompVisDenoiser
 from modules.sd_samplers_timesteps import CompVisTimestepsDenoiser, CompVisTimestepsVDenoiser
 from modules.sd_samplers_cfg_denoiser import CFGDenoiser, catenate_conds, subscript_cond, pad_cond
 from modules import script_callbacks
-
+######## Infotext processing ##########
 quote_swap = str.maketrans('\'"', '"\'')
 
 
@@ -33,7 +33,7 @@ def pares_infotext(infotext, params):
 
 
 script_callbacks.on_infotext_pasted(pares_infotext)
-
+#######################################
 
 class CHGDenoiser(CFGDenoiser):
     def __init__(self, sampler):
@@ -127,9 +127,7 @@ class CHGDenoiser(CFGDenoiser):
             if shared.opts.batch_cond_uncond:
                 x_out = self.Chara_iteration(None, x_in, sigma_in, uncond, cond_scale, conds_list,
                                              cond=make_condition_dict(cond_in, image_cond_in))
-                print("b0")
             else:
-                print("b1")
                 x_out = torch.zeros_like(x_in)
                 for batch_offset in range(0, x_out.shape[0], batch_size):
                     a = batch_offset
@@ -138,7 +136,6 @@ class CHGDenoiser(CFGDenoiser):
                                                   cond=make_condition_dict(subscript_cond(cond_in, a, b),
                                                                            image_cond_in[a:b]))
         else:
-            print("b2")
             x_out = torch.zeros_like(x_in)
             batch_size = batch_size * 2 if shared.opts.batch_cond_uncond else batch_size
             for batch_offset in range(0, tensor.shape[0], batch_size):
@@ -154,14 +151,12 @@ class CHGDenoiser(CFGDenoiser):
                                               cond=make_condition_dict(c_crossattn, image_cond_in[a:b]))
 
             if not skip_uncond:
-                print("b3")
                 x_out[-uncond.shape[0]:] = self.inner_model(x_in[-uncond.shape[0]:], sigma_in[-uncond.shape[0]:],
                                                             cond=make_condition_dict(uncond,
                                                                                      image_cond_in[-uncond.shape[0]:]))
 
         denoised_image_indexes = [x[0][0] for x in conds_list]
         if skip_uncond:
-            print("b4")
             fake_uncond = torch.cat([x_out[i:i + 1] for i in denoised_image_indexes])
             x_out = torch.cat([x_out,
                                fake_uncond])  # we skipped uncond denoising, so we put cond-denoised image to where the uncond-denoised image should be
@@ -172,14 +167,10 @@ class CHGDenoiser(CFGDenoiser):
         devices.test_for_nans(x_out, "unet")
 
         if is_edit_model:
-            print("c1")
             denoised = self.combine_denoised_for_edit_model(x_out, cond_scale)
         elif skip_uncond:
-            print("c2")
             denoised = self.combine_denoised(x_out, conds_list, uncond, 1.0)
         else:
-            print("c3")
-            print(conds_list)
             denoised = self.combine_denoised(x_out, conds_list, uncond, cond_scale)
 
         if not self.mask_before_denoising and self.mask is not None:
