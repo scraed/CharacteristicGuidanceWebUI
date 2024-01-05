@@ -21,11 +21,13 @@ from modules.sd_samplers_timesteps import CompVisTimestepsDenoiser, CompVisTimes
 from modules.sd_samplers_cfg_denoiser import CFGDenoiser, catenate_conds, subscript_cond, pad_cond
 from modules import script_callbacks
 
+quote_swap = str.maketrans('\'"', '"\'')
+
 
 def pares_infotext(infotext, params):
     # parse infotext decode json string
     try:
-        params['CHG'] = json.loads(params['CHG'].replace("'", '"'))
+        params['CHG'] = json.loads(params['CHG'].translate(quote_swap))
     except Exception:
         pass
 
@@ -667,7 +669,7 @@ class ExtensionTemplateScript(scripts.Script):
                       checkbox, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
-            # write parameters to extra_generation_params["CHG"] as json dict with double quotes replaced by single quotes
+            # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
             parameters = {
                 'RegS': reg_ini,
                 'RegR': reg_range,
@@ -680,7 +682,7 @@ class ExtensionTemplateScript(scripts.Script):
                 'AStrength': reg_w,
                 'AADim': aa_dim
             }
-            p.extra_generation_params["CHG"] = json.dumps(parameters).replace('"', "'")
+            p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
 
     # Extension main process
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
