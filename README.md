@@ -4,9 +4,9 @@
 Characteristic Guidance Web UI is a tool that offers theroy-backed high CFG scale correction for the Stable Diffusion web UI (AUTOMATIC1111), aims at enhancing the sampling and control quality of diffusion models at large CFG guidance scale.
 
 ## Features
-![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.PNG?raw=true)
-![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.PNG?raw=true)
-![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.PNG?raw=true)
+![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
+![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.jpg?raw=true)
+![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.jpg?raw=true)
 
 - Improved sample generation control at high CFG scale
 - Compatible with existing sampling methods
@@ -57,7 +57,9 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 ### Visualization and Testing
 - **Check Convergence Button**: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
 
-In practice, convergence is not always guaranteed. If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step. Please experiment with different settings, especially regularization strength and time range, to achieve better convergence for your specific use case.
+In practice, convergence is not always guaranteed. **If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step**. 
+
+Please experiment with different settings, especially **regularization strength and time range**, to achieve better convergence for your specific use case. (According to my experience, high CFG scale need relatively large regularization strength and time range for convergence, while low CFG scale prefers lower regularization strength and time range for more guidance correction.)
 
 ### Compatibility
 
