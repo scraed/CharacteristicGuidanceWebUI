@@ -52,10 +52,10 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 - `AA Iteration Memory Size`: Range 1 to 10 (default: 2). Specifies the memory size for AA (Anderson Acceleration) iterations, influencing convergence speed and stability.
 
 ### Activation
-- **Enable Checkbox**: Toggles the activation of the Characteristic Guidance features.
+- `Enable` Checkbox: Toggles the activation of the Characteristic Guidance features.
 
 ### Visualization and Testing
-- **Check Convergence Button**: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
+- `Check Convergence` Button: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
 
 In practice, convergence is not always guaranteed. **If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step**. 
 
