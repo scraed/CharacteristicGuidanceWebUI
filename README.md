@@ -7,9 +7,10 @@ Characteristic Guidance Web UI is a tool that offers theroy-backed high CFG scal
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
 ![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.jpg?raw=true)
 ![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.jpg?raw=true)
-
+![1girl, kimono](https://scraed.github.io/CharacteristicGuidance/static/images/1girl%20kimono.jpg?raw=true)
 - Improved sample generation control at high CFG scale
 - Compatible with existing sampling methods
+- Preliminary support for ControlNet
 
 For more information and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
 
@@ -43,6 +44,7 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 - `Max Num. Characteristic Iteration`: Range 1 to 50 (default: 30). Determines the maximum number of characteristic iterations per sampling time step.
 - `Num. Basis for Correction`: Range 1 to 6 (default: 1). Sets the number of bases for correction, influencing the amount of correction and convergence behavior. More basis means better quality but harder convergence
 - `Reuse Correction of Previous Iteration`: Range 0.0 to 1.0 (default: 0.0). Controls the reuse of correction from previous iterations to reduce abrupt changes during generation. Suppress Abrupt Changes During Generation.
+- `Iterate with Controlnet` Checkbox: If the controlnet is turned on when iteratively solving characteristic guidance correction.
 
 ### Advanced Parameters
 - `Log 10 Tolerance for Iteration Convergence`: Range -6 to -2 (default: -4). Adjusts the tolerance for iteration convergence, trading off between speed and image quality.
@@ -76,18 +78,18 @@ Here is my recommended approach for parameter setting:
    - Increase the `Reuse Correction of Previous Iteration` to mitigate this issue.
 
 
-## Compatibility
-
-This extension is currently incompatible with ControlNet, as the integration of ControlNet and characteristic guidance remains an open problem (which I am investigating).
-Known issues include:
-- Iterations failing to converge when ControlNet is in reference mode.
-- While certain ControlNet modes can operate successfully with characteristic guidance enabled, the corrections made by characteristic guidance are not obvious.
-
-We are dedicated to developing a solution in the future.
 
 ## Updates
 
+This extension now preliminary supports ControlNet. The integration of ControlNet and characteristic guidance remains an scientific open problem (which I am investigating). Please note that as this is an initial integration, some features may still be in development, and users might encounter limitations or issues.  
+Known issues include:
+- Iterations failing to converge when ControlNet is in reference mode.
+
+We are dedicated to developing a solution in the future.
+
 Now the infotext can be read by the UI thanks to [@w-e-w](https://github.com/w-e-w) , see how to use at this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1). 
+
+## Compatibility
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:

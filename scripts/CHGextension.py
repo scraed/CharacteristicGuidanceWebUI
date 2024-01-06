@@ -200,6 +200,17 @@ class CHGDenoiser(CFGDenoiser):
         if dxs is None:
             dxs = torch.zeros_like(x_in[-uncond.shape[0]:])
 
+        if not self.checkbox_controlnet:
+            control_net_weights = []
+            for script in self.process_p.scripts.scripts:
+                if script.title() == "ControlNet":
+                    try:
+                        for param in script.latest_network.control_params:
+                            control_net_weights.append(param.weight)
+                            param.weight = 0.
+                    except:
+                        pass
+
         res_thres = self.res_thres
         h = cond_scale
 
@@ -467,6 +478,18 @@ class CHGDenoiser(CFGDenoiser):
         dxs_add = torch.cat([(h - 1) * final_dxs, h * final_dxs], axis=0)
         self.dxs_buffer = final_dxs
         self.abt_buffer = abt_current
+
+        if not self.checkbox_controlnet:
+            controlnet_count = 0
+            for script in self.process_p.scripts.scripts:
+                if script.title() == "ControlNet":
+                    try:
+                        for param in script.latest_network.control_params:
+                            param.weight = control_net_weights[controlnet_count]
+                            controlnet_count += 1
+                    except:
+                        pass          
+
         return self.inner_model(x_in + dxs_add, sigma_in, cond=cond)
 
 
@@ -624,6 +647,10 @@ class ExtensionTemplateScript(scripts.Script):
                     False,
                     label="Enable"
                 )
+                checkbox_controlnet = gr.Checkbox(
+                    True,
+                    label="Iterate with Controlnet"
+                )
             with gr.Blocks() as demo:
                 image = gr.Image()
                 button = gr.Button("Check Convergence (Please Adjust Regularization If Not Converged)")
@@ -651,13 +678,14 @@ class ExtensionTemplateScript(scripts.Script):
             (reg_size, get_chg_parameter('ASpeed')),
             (reg_w, get_chg_parameter('AStrength')),
             (aa_dim, get_chg_parameter('AADim')),
+            (checkbox_controlnet, get_chg_parameter('IteC')),
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox]
+        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, checkbox_controlnet]
 
     def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, **kwargs):
+                      checkbox, checkbox_controlnet, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -671,7 +699,8 @@ class ExtensionTemplateScript(scripts.Script):
                 'IteSS': lr,
                 'ASpeed': reg_size,
                 'AStrength': reg_w,
-                'AADim': aa_dim
+                'AADim': aa_dim,
+                'IteC': checkbox_controlnet
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
 
@@ -679,7 +708,7 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, **kwargs):
+                      checkbox, checkbox_controlnet, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 # modules = sys.modules
@@ -701,6 +730,8 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.abt_buffer = None
                     CFGDenoiser.aa_dim = aa_dim
                     CFGDenoiser.chara_decay = chara_decay
+                    CFGDenoiser.checkbox_controlnet = checkbox_controlnet
+                    CFGDenoiser.process_p = p
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
                         result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
@@ -723,6 +754,8 @@ class ExtensionTemplateScript(scripts.Script):
                         del CFGDenoiser.abt_buffer
                         del CFGDenoiser.aa_dim
                         del CFGDenoiser.chara_decay
+                        del CFGDenoiser.checkbox_controlnet
+                        del CFGDenoiser.process_p
                         # del CFGDenoiser.CFGdecayS
                 else:
                     result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
