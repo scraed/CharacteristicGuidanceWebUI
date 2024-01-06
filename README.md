@@ -72,11 +72,11 @@ Here is my recommended approach for parameter setting:
 4. If convergence is not reached:
    - Increment the `Max Num. Characteristic Iteration` to allow for additional iterations.
    - Should convergence still not occur, raise the `Regularization Strength` and `Regularization Range Over Time` for increased regularization.
-5. To address abrupt changes in the plotted content (commonly due to unconverged steps):
+5. To address abrupt changes in the plotted content during sampling (commonly due to unconverged steps):
    - Increase the `Reuse Correction of Previous Iteration` to mitigate this issue.
 
 
-### Compatibility
+## Compatibility
 
 This extension is currently incompatible with ControlNet, as the integration of ControlNet and characteristic guidance remains an open problem (which I am investigating).
 Known issues include:
@@ -85,7 +85,7 @@ Known issues include:
 
 We are dedicated to developing a solution in the future.
 
-### Updates
+## Updates
 
 Now the infotext can be read by the UI thanks to [@w-e-w](https://github.com/w-e-w) , see how to use at this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1). 
 
