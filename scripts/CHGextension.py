@@ -647,6 +647,7 @@ class ExtensionTemplateScript(scripts.Script):
                     False,
                     label="Enable"
                 ) 
+                markdown = gr.Markdown("[How to set parameters? Check our github!](https://github.com/scraed/CharacteristicGuidanceWebUI/tree/main)")
                 radio = gr.Radio(
                     choices=["More Prompt", "More ControlNet"], 
                     label="ControlNet Compatible Mode", 
@@ -683,10 +684,10 @@ class ExtensionTemplateScript(scripts.Script):
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, radio]
+        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio]
 
     def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, radio, **kwargs):
+                      checkbox, markdown, radio, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -709,7 +710,7 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, radio, **kwargs):
+                      checkbox, markdown, radio, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 # modules = sys.modules
