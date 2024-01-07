@@ -83,7 +83,7 @@ Here is my recommended approach for parameter setting:
 
 ## Updates
 
-This extension now preliminary supports ControlNet. The integration of ControlNet and characteristic guidance remains an scientific open problem (which I am investigating). Please note that as this is an initial integration, some features may still be in development, and users might encounter limitations or issues.  
+This extension now preliminary supports ControlNet. The integration of ControlNet and characteristic guidance remains a scientific open problem (which I am investigating). Please note that as this is an initial integration, some features may still be in development, and users might encounter limitations or issues.  
 Known issues include:
 - Iterations failing to converge when ControlNet is in reference mode.
 
