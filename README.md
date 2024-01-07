@@ -1,7 +1,7 @@
-# Characteristic Guidance Web UI (High CFG scale fixed sampling)
+# Characteristic Guidance Web UI (enhanced sampling for high CFG scale)
 
 ## About
-Characteristic Guidance Web UI is a tool that offers theory-backed high CFG scale correction for the Stable Diffusion web UI (AUTOMATIC1111), aims at enhancing the sampling and control quality of diffusion models at large CFG guidance scale.
+Characteristic Guidance Web UI is a tool that offers theory-backed high CFG scale (5-30) correction for the Stable Diffusion web UI (AUTOMATIC1111), aims at enhancing the sampling and control quality of diffusion models at large CFG guidance scale.
 
 ## Features
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
