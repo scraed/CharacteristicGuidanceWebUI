@@ -541,6 +541,7 @@ class ExtensionTemplateScript(scripts.Script):
                 ax2 = axs[i].twinx()
                 ax2.plot(range(len(ite_num[i])), reg[i], linewidth=4, color='C1', label='Regularization Level')
                 ax2.set_ylabel('Regularization Level')
+                ax2.set_ylim(bottom=0.)
                 ax2.legend(loc='upper left')
             # axs[i].set_title('Convergence Status of Iterations for Each Step')
         elif len(res) == 1:
@@ -555,6 +556,7 @@ class ExtensionTemplateScript(scripts.Script):
             ax2 = axs.twinx()
             ax2.plot(range(len(ite_num[0])), reg[0], linewidth=4, color='C1', label='Regularization Level')
             ax2.set_ylabel('Regularization Level')
+            ax2.set_ylim(bottom=0.)
             ax2.legend(loc='upper left')
         else:
             pass
