@@ -89,13 +89,20 @@ Here is my recommended approach for parameter setting:
 
 ## Updates
 
-This extension now preliminary supports ControlNet. The integration of ControlNet and characteristic guidance remains a scientific open problem (which I am investigating). Please note that as this is an initial integration, some features may still be in development, and users might encounter limitations or issues.  
-Known issues include:
-- Iterations failing to converge when ControlNet is in reference mode.
+### January 8, 2024: Improved Guidance Settings
+- **Extended Settings Range**: `Regularization Strength` & `Regularization Range Over Time` can now go up to 10.
+- **Effect**: Reproduce classifier-free guidance results at high values of `Regularization Strength` & `Regularization Range Over Time`.
+- **User Action Required**: Please delete "ui-config.json" from the stable diffusion WebUI root directory for the update to take effect.
 
-We are dedicated to developing a solution in the future.
+### January 6, 2024: Integration of ControlNet
+- **Early Support**: We're excited to announce preliminary support for ControlNet.
+- **Current Limitations**: As this is an early stage, expect some developmental issues. The integration of ControlNet and characteristic guidance remains a scientific open problem (which I am investigating). Known issues include:
+   - Iterations failing to converge when ControlNet is in reference mode.
 
-Now the infotext can be read by the UI thanks to [@w-e-w](https://github.com/w-e-w) , see how to use at this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1). 
+### January 3, 2024: UI Enhancement for Infotext
+- **Thanks to [@w-e-w](https://github.com/w-e-w)**: The UI now supports infotext reading.
+- **How to Use**: Check out this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1) for detailed instructions.
+
 
 ## Compatibility
 
