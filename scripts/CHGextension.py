@@ -365,7 +365,7 @@ class CHGDenoiser(CFGDenoiser):
 
                 return dx_proj.reshape(*dx.shape)
 
-        reg_level = torch.zeros(dxs.shape[0], device=dxs.device) + 5
+        reg_level = torch.zeros(dxs.shape[0], device=dxs.device) + max(5,self.reg_ini)
         reg_target_level = self.reg_ini * (abt_smallest / abt_current[:, 0, 0, 0]) ** (1 / self.reg_range)
         Converged = False
         eps0_ch, eps1_ch = torch.zeros_like(dxs), torch.zeros_like(dxs)
@@ -573,14 +573,14 @@ class ExtensionTemplateScript(scripts.Script):
         with gr.Accordion('Characteristic Guidance', open=False):
             reg_ini = gr.Slider(
                 minimum=0.0,
-                maximum=5.,
+                maximum=10.,
                 step=0.1,
                 value=1.,
                 label="Regularization Strength ( → Easier Convergence, Closer to CFG)",
             )
             reg_range = gr.Slider(
                 minimum=0.01,
-                maximum=5.,
+                maximum=10.,
                 step=0.01,
                 value=1.,
                 label="Regularization Range Over Time ( ← Harder Convergence, More Correction)",
@@ -724,8 +724,16 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.lr_chara = lr
                     CFGDenoiser.ite = ite
                     CFGDenoiser.reg_size = reg_size
-                    CFGDenoiser.reg_ini = reg_ini
-                    CFGDenoiser.reg_range = reg_range
+                    if reg_ini<=5:
+                        CFGDenoiser.reg_ini = reg_ini
+                    else:
+                        k = 0.8898
+                        CFGDenoiser.reg_ini = np.exp(k*(reg_ini-5))/np.exp(0)/k + 5 - 1/k
+                    if reg_range<=5:
+                        CFGDenoiser.reg_range = reg_range
+                    else:
+                        k = 0.8898
+                        CFGDenoiser.reg_range = np.exp(k*(reg_range-5))/np.exp(0)/k + 5 - 1/k
                     CFGDenoiser.reg_w = reg_w
                     CFGDenoiser.ite_infos = [[], [], []]
                     CFGDenoiser.dxs_buffer = None

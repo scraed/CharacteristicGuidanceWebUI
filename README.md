@@ -39,8 +39,8 @@ The characteristic guidance is slow compared to classifier-free guidance. We rec
 Below are the parameters you can adjust to customize the behavior of the guidance correction:
 
 ### Basic Parameters
-- `Regularization Strength`: Range 0.0 to 5.0 (default: 1). Adjusts the strength of regularization at the beginning of sampling, larger regularization means easier convergence and closer alignment with CFG (Classifier Free Guidance).
-- `Regularization Range Over Time`: Range 0.01 to 5.0 (default: 1). Modifies the range of time being regularized, larger time means slow decay in regularization strength hence more time steps being regularized, affecting convergence difficulty and the extent of correction.
+- `Regularization Strength`: Range 0.0 to 10.0 (default: 1). Adjusts the strength of regularization at the beginning of sampling, larger regularization means easier convergence and closer alignment with CFG (Classifier Free Guidance).
+- `Regularization Range Over Time`: Range 0.01 to 10.0 (default: 1). Modifies the range of time being regularized, larger time means slow decay in regularization strength hence more time steps being regularized, affecting convergence difficulty and the extent of correction.
 - `Max Num. Characteristic Iteration`: Range 1 to 50 (default: 30). Determines the maximum number of characteristic iterations per sampling time step.
 - `Num. Basis for Correction`: Range 1 to 6 (default: 1). Sets the number of bases for correction, influencing the amount of correction and convergence behavior. More basis means better quality but harder convergence
 - `Reuse Correction of Previous Iteration`: Range 0.0 to 1.0 (default: 0.0). Controls the reuse of correction from previous iterations to reduce abrupt changes during generation. Suppress Abrupt Changes During Generation.
