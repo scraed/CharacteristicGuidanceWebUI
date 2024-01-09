@@ -598,7 +598,7 @@ class ExtensionTemplateScript(scripts.Script):
             )
             noise_base = gr.Slider(
                 minimum=1,
-                maximum=20,
+                maximum=10,
                 step=1,
                 value=1,
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
