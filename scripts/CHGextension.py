@@ -513,6 +513,8 @@ class ExtensionTemplateScript(scripts.Script):
             res = np.array([r[:, 0, 0, 0].cpu().numpy() for r in res]).T
             ite_num = np.array([r.cpu().numpy() for r in ite_num]).T
             reg = np.array([r.cpu().numpy() for r in reg]).T
+            if len(res) == 0:
+                raise Exception('res has not been written yet')
         except:
             res, ite_num, reg = [np.linspace(1, 0., 50)], [np.ones(50) * 10], [np.linspace(1, 0., 50)]
         try:
