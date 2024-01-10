@@ -779,7 +779,8 @@ class ExtensionTemplateScript(scripts.Script):
             return wrapper
 
         # TODO: get UI info through UI object angle, checkbox
-        p.sample = modified_sample(p.sample).__get__(p)
+        if checkbox:
+            p.sample = modified_sample(p.sample).__get__(p)
 
         # print(p.sampler_name)
         # TODO: add image edit process via Processed object proc
