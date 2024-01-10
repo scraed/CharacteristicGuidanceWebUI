@@ -105,6 +105,13 @@ Here is my recommended approach for parameter setting:
 
 
 ## Compatibility
+### Using Characteristic Guidance with Dynamical Thresholding
+It's advisable to avoid using [Characteristic Guidance](#) and [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding) simutaneously. These two extensions alter latents in theoretically different ways:
+
+- **Characteristic Guidance**: Corrects latents at the given CFG scale.
+- **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales.
+
+While combining them won't cause code errors, it may lead to unpredictable outcomes.
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
