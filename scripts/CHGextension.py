@@ -474,6 +474,7 @@ class CHGDenoiser(CFGDenoiser):
         # print(iteration_counts[:,0,0,0].shape)
         self.ite_infos[1].append(iteration_counts[:, 0, 0, 0])
         self.ite_infos[2].append(reg_target_level)
+        print("Characteristic iteration happens", iteration_counts[:, 0, 0, 0] , "times")
         final_dxs = best_dxs * (1 - not_converged.long())
         dxs_add = torch.cat([(h - 1) * final_dxs, h * final_dxs], axis=0)
         self.dxs_buffer = final_dxs
