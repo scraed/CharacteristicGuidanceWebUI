@@ -761,6 +761,7 @@ class ExtensionTemplateScript(scripts.Script):
                     except Exception as e:
                         raise e
                     finally:
+                        print("Characteristic Guidance recorded iterations info for " + str(len(CFGDenoiser.ite_infos[0])) + " steps"  )
                         print("Characteristic Guidance recovering the CFGDenoiser")
                         CFGDenoiser.forward = original_forward
                         del CFGDenoiser.Chara_iteration
@@ -778,6 +779,7 @@ class ExtensionTemplateScript(scripts.Script):
                         del CFGDenoiser.chara_decay
                         del CFGDenoiser.process_p
                         del CFGDenoiser.radio_controlnet
+                        
                         
                         # del CFGDenoiser.CFGdecayS
                 else:
