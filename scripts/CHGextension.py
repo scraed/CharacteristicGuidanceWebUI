@@ -515,8 +515,12 @@ class ExtensionTemplateScript(scripts.Script):
             reg = np.array([r.cpu().numpy() for r in reg]).T
             if len(res) == 0:
                 raise Exception('res has not been written yet')
-        except:
+        except Exception as e:
             res, ite_num, reg = [np.linspace(1, 0., 50)], [np.ones(50) * 10], [np.linspace(1, 0., 50)]
+            print("The following exception occured when reading iteration into, demo plot is returned")
+            print(e)
+
+
         try:
             res_thres = CFGDenoiser.res_thres
         except:
@@ -709,6 +713,7 @@ class ExtensionTemplateScript(scripts.Script):
                 'CMode': radio
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
+            print("Characteristic Guidance parameters registered")
 
     # Extension main process
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
@@ -720,6 +725,7 @@ class ExtensionTemplateScript(scripts.Script):
                 # modules = sys.modules
                 if checkbox:
                     # from ssd_samplers_chg_denoiser import CFGDenoiser as CHGDenoiser
+                    print("Characteristic Guidance injecting the CFGDenoiser")
                     original_forward = CFGDenoiser.forward
                     CFGDenoiser.forward = CHGDenoiser.forward
                     CFGDenoiser.Chara_iteration = CHGDenoiser.Chara_iteration
@@ -748,12 +754,14 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.radio_controlnet = radio
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
+                        print("Characteristic Guidance sampling:")
                         result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
                                         prompts)
 
                     except Exception as e:
                         raise e
                     finally:
+                        print("Characteristic Guidance recovering the CFGDenoiser")
                         CFGDenoiser.forward = original_forward
                         del CFGDenoiser.Chara_iteration
                         # del CFGDenoiser.res_thres
@@ -770,6 +778,7 @@ class ExtensionTemplateScript(scripts.Script):
                         del CFGDenoiser.chara_decay
                         del CFGDenoiser.process_p
                         del CFGDenoiser.radio_controlnet
+                        
                         # del CFGDenoiser.CFGdecayS
                 else:
                     result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
@@ -780,6 +789,7 @@ class ExtensionTemplateScript(scripts.Script):
 
         # TODO: get UI info through UI object angle, checkbox
         if checkbox:
+            print("Characteristic Guidance enabled, warpping the sample method")
             p.sample = modified_sample(p.sample).__get__(p)
 
         # print(p.sampler_name)
