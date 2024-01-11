@@ -8,7 +8,7 @@ Characteristic guidance offers improved sample generation and control at high CF
 - Detail refinement
 - Fixing quality issues, like
   - Weird colors and styles
-  - Bad anatomy
+  - Bad anatomy (not guaranteed :rofl:)
   - Strange backgrounds
     
 Characteristic guidance is compatible with existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
