@@ -517,7 +517,7 @@ class ExtensionTemplateScript(scripts.Script):
                 raise Exception('res has not been written yet')
         except Exception as e:
             res, ite_num, reg = [np.linspace(1, 0., 50)], [np.ones(50) * 10], [np.linspace(1, 0., 50)]
-            print("The following exception occured when reading iteration into, demo plot is returned")
+            print("The following exception occured when reading iteration info, demo plot is returned")
             print(e)
 
 
