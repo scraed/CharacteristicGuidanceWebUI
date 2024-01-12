@@ -90,7 +90,7 @@ Here is my recommended approach for parameter setting:
 ## Updates
 ### January 12, 2024: Add support of 'AND' prompt combination 
 - **Effect**: Now the extension supports the 'AND' word in positive prompt.
-- **Current Limitations**: Note that characteristic guidance only give correction between positive and negative prompt. Positive prompts combined by 'AND' will be averaged before computing characteristic guidance.
+- **Current Limitations**: Note that characteristic guidance only give correction between positive and negative prompt. Therefore positive prompts combined by 'AND' will be averaged when computing the correction.
 
 ### January 8, 2024: Improved Guidance Settings
 - **Extended Settings Range**: `Regularization Strength` & `Regularization Range Over Time` can now go up to 10.
