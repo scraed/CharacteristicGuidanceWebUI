@@ -212,7 +212,11 @@ class CHGDenoiser(CFGDenoiser):
                         pass
 
         res_thres = self.res_thres
-        h = cond_scale
+        
+        num_x_in_cond = len(x_in[:-uncond.shape[0]])
+        
+        h = cond_scale*num_x_in_cond
+        
 
         # print("sigma_in", sigma_in)
         if isinstance(self.inner_model, CompVisDenoiser) or isinstance(self.inner_model, CompVisVDenoiser):
@@ -226,8 +230,8 @@ class CHGDenoiser(CFGDenoiser):
         else:
             raise NotImplementedError()
 
-        scale = ((1 - abt) ** 0.5)[:-uncond.shape[0], None, None, None]
-        abt_current = abt[:-uncond.shape[0], None, None, None]
+        scale = ((1 - abt) ** 0.5)[-uncond.shape[0]:, None, None, None]
+        abt_current = abt[-uncond.shape[0]:, None, None, None]
         abt_smallest = self.inner_model.inner_model.alphas_cumprod[-1]
         # x_in_cond = x_in[:-uncond.shape[0]]
         # x_in_uncond = x_in[-uncond.shape[0]:]
@@ -385,15 +389,17 @@ class CHGDenoiser(CFGDenoiser):
         iteration_counts = 0
         for iteration in range(n_iterations):
             # important to keep iteration content consistent
-            dxs_add = torch.cat([(h - 1) * dxs, h * dxs], axis=0)
+            dxs_add = torch.cat([ *( [(h - 1) * dxs]*num_x_in_cond ), h * dxs], axis=0)
             if isinstance(self.inner_model, CompVisDenoiser) or isinstance(self.inner_model, CompVisVDenoiser):
                 eps_out = self.inner_model.get_eps(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
-                pred_eps_cond, pred_eps_uncond = eps_out.chunk(2)
+                pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
                 ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
             elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
                                                                                       CompVisTimestepsVDenoiser):
                 eps_out = self.inner_model(x_in + dxs_add, t_in, cond=cond)
-                pred_eps_cond, pred_eps_uncond = eps_out.chunk(2)
+                pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
                 ggg = (pred_eps_uncond - pred_eps_cond) * scale
             else:
                 raise NotImplementedError()
@@ -476,7 +482,7 @@ class CHGDenoiser(CFGDenoiser):
         self.ite_infos[2].append(reg_target_level)
         print("Characteristic iteration happens", iteration_counts[:, 0, 0, 0] , "times")
         final_dxs = best_dxs * (1 - not_converged.long())
-        dxs_add = torch.cat([(h - 1) * final_dxs, h * final_dxs], axis=0)
+        dxs_add = torch.cat([ *( [(h - 1) * final_dxs,]*num_x_in_cond ), h * final_dxs], axis=0)
         self.dxs_buffer = final_dxs
         self.abt_buffer = abt_current
 
