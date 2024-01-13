@@ -791,23 +791,6 @@ class ExtensionTemplateScript(scripts.Script):
                         print("Characteristic Guidance recorded iterations info for " + str(len(CFGDenoiser.ite_infos[0])) + " steps"  )
                         print("Characteristic Guidance recovering the CFGDenoiser")
                         CFGDenoiser.forward = original_forward
-                        del CFGDenoiser.Chara_iteration
-                        # del CFGDenoiser.res_thres
-                        del CFGDenoiser.noise_base
-                        del CFGDenoiser.lr_chara
-                        del CFGDenoiser.ite
-                        del CFGDenoiser.reg_size
-                        del CFGDenoiser.reg_ini
-                        del CFGDenoiser.reg_range
-                        del CFGDenoiser.reg_w
-                        del CFGDenoiser.dxs_buffer
-                        del CFGDenoiser.abt_buffer
-                        del CFGDenoiser.aa_dim
-                        del CFGDenoiser.chara_decay
-                        del CFGDenoiser.process_p
-                        del CFGDenoiser.radio_controlnet
-                        
-                        
                         # del CFGDenoiser.CFGdecayS
                 else:
                     result = sample(conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength,
