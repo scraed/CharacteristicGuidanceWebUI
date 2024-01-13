@@ -219,10 +219,14 @@ class CHGDenoiser(CFGDenoiser):
         
 
         # print("sigma_in", sigma_in)
-        if isinstance(self.inner_model, CompVisDenoiser) or isinstance(self.inner_model, CompVisVDenoiser):
+        if isinstance(self.inner_model, CompVisDenoiser):
             t_in = self.inner_model.sigma_to_t(sigma_in)
             abt = self.inner_model.inner_model.alphas_cumprod[t_in.long()]
             c_out, c_in = [utils.append_dims(x, x_in.ndim) for x in self.inner_model.get_scalings(sigma_in)]
+        elif isinstance(self.inner_model, CompVisVDenoiser):
+            t_in = self.inner_model.sigma_to_t(sigma_in)
+            abt = self.inner_model.inner_model.alphas_cumprod[t_in.long()]
+            c_skip, c_out, c_in = [utils.append_dims(x, x_in.ndim) for x in self.inner_model.get_scalings(sigma_in)]
         elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
                                                                                   CompVisTimestepsVDenoiser):
             t_in = sigma_in
@@ -390,8 +394,14 @@ class CHGDenoiser(CFGDenoiser):
         for iteration in range(n_iterations):
             # important to keep iteration content consistent
             dxs_add = torch.cat([ *( [(h - 1) * dxs]*num_x_in_cond ), h * dxs], axis=0)
-            if isinstance(self.inner_model, CompVisDenoiser) or isinstance(self.inner_model, CompVisVDenoiser):
+            if isinstance(self.inner_model, CompVisDenoiser):
                 eps_out = self.inner_model.get_eps(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
+                pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
+                ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
+            elif isinstance(self.inner_model, CompVisVDenoiser):
+                v_out = self.inner_model.get_v(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
+                eps_out = -c_out*x_in + c_skip**0.5*v_out
                 pred_eps_uncond = eps_out[-uncond.shape[0]:]
                 pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
                 ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
