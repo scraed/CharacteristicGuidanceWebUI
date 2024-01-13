@@ -213,7 +213,7 @@ class CHGDenoiser(CFGDenoiser):
 
         res_thres = self.res_thres
         
-        num_x_in_cond = len(x_in[:-uncond.shape[0]])
+        num_x_in_cond = len(x_in[:-uncond.shape[0]])//len(dxs)
         
         h = cond_scale*num_x_in_cond
         
@@ -393,23 +393,31 @@ class CHGDenoiser(CFGDenoiser):
         iteration_counts = 0
         for iteration in range(n_iterations):
             # important to keep iteration content consistent
-            dxs_add = torch.cat([ *( [(h - 1) * dxs]*num_x_in_cond ), h * dxs], axis=0)
+            # Supoort AND prompt combination by using multiple dxs for condition part
+            dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
+            dxs_add = torch.cat([ dxs_cond_part, h * dxs], axis=0)
             if isinstance(self.inner_model, CompVisDenoiser):
                 eps_out = self.inner_model.get_eps(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
                 pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
+                eps_cond_batch = eps_out[:-uncond.shape[0]]
+                eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
                 ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
             elif isinstance(self.inner_model, CompVisVDenoiser):
                 v_out = self.inner_model.get_v(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
                 eps_out = -c_out*x_in + c_skip**0.5*v_out
                 pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
+                eps_cond_batch = eps_out[:-uncond.shape[0]]
+                eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
                 ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
             elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
                                                                                       CompVisTimestepsVDenoiser):
                 eps_out = self.inner_model(x_in + dxs_add, t_in, cond=cond)
                 pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                pred_eps_cond = torch.mean( eps_out[:-uncond.shape[0]], dim=0, keepdim=True )
+                eps_cond_batch = eps_out[:-uncond.shape[0]]
+                eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
                 ggg = (pred_eps_uncond - pred_eps_cond) * scale
             else:
                 raise NotImplementedError()
@@ -492,7 +500,9 @@ class CHGDenoiser(CFGDenoiser):
         self.ite_infos[2].append(reg_target_level)
         print("Characteristic iteration happens", iteration_counts[:, 0, 0, 0] , "times")
         final_dxs = best_dxs * (1 - not_converged.long())
-        dxs_add = torch.cat([ *( [(h - 1) * final_dxs,]*num_x_in_cond ), h * final_dxs], axis=0)
+        dxs_cond_part = torch.cat( [*( [(h - 1) * final_dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
+        dxs_add = torch.cat([ dxs_cond_part, h * final_dxs], axis=0)
+        #dxs_add = torch.cat([ *( [(h - 1) * final_dxs,]*num_x_in_cond ), h * final_dxs], axis=0)
         self.dxs_buffer = final_dxs
         self.abt_buffer = abt_current
 
