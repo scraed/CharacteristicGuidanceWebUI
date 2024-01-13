@@ -88,6 +88,9 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+### January 13, 2024: Add support of V-Prediction model 
+- **Effect**: Now the extension supports models trained in V-prediction mode.
+
 ### January 12, 2024: Add support of 'AND' prompt combination 
 - **Effect**: Now the extension supports the 'AND' word in positive prompt.
 - **Current Limitations**: Note that characteristic guidance only give correction between positive and negative prompt. Therefore positive prompts combined by 'AND' will be averaged when computing the correction.
@@ -107,7 +110,9 @@ Here is my recommended approach for parameter setting:
 - **How to Use**: Check out this [PR](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/1) for detailed instructions.
 
 
-## Compatibility
+## Compatibility and Issues
+### TODO: Characteristic guidance won't work when prompt length > 75
+I'm trying to find a fix
 ### Using Characteristic Guidance with Dynamical Thresholding
 It's advisable to be cautious when using [Characteristic Guidance](#) and [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding) simutaneously. These two extensions alter latents in theoretically different ways:
 
