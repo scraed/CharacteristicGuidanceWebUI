@@ -89,7 +89,7 @@ Here is my recommended approach for parameter setting:
 
 ## Updates
 
-### January 13, 2024: Bug fix: allow prompts with more than 75 tokens
+### January 14, 2024: Bug fix: allow prompts with more than 75 tokens
 - **Effect**: Now the extension still works if the prompt have more than 75 tokens.
 
 ### January 13, 2024: Add support for V-Prediction model 
