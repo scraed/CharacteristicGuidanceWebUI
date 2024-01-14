@@ -88,10 +88,14 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
-### January 13, 2024: Add support of V-Prediction model 
+
+### January 13, 2024: Bug fix: allow prompts with more than 75 tokens
+- **Effect**: Now the extension still works if the prompt have more than 75 tokens.
+
+### January 13, 2024: Add support for V-Prediction model 
 - **Effect**: Now the extension supports models trained in V-prediction mode.
 
-### January 12, 2024: Add support of 'AND' prompt combination 
+### January 12, 2024: Add support for 'AND' prompt combination 
 - **Effect**: Now the extension supports the 'AND' word in positive prompt.
 - **Current Limitations**: Note that characteristic guidance only give correction between positive and negative prompt. Therefore positive prompts combined by 'AND' will be averaged when computing the correction.
 
@@ -111,8 +115,7 @@ Here is my recommended approach for parameter setting:
 
 
 ## Compatibility and Issues
-### TODO: Characteristic guidance won't work when prompt length > 75
-I'm trying to find a fix
+
 ### Using Characteristic Guidance with Dynamical Thresholding
 It's advisable to be cautious when using [Characteristic Guidance](#) and [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding) simutaneously. These two extensions alter latents in theoretically different ways:
 
