@@ -640,7 +640,7 @@ class ExtensionTemplateScript(scripts.Script):
                 maximum=10.,
                 step=0.1,
                 value=1.,
-                label="Regularization Strength ( → Easier Convergence, Closer to CFG. Please try various values)",
+                label="Regularization Strength ( → Easier Convergence, Closer to Classfier-Free. Please try various values)",
             )
             reg_range = gr.Slider(
                 minimum=0.01,
