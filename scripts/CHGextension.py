@@ -579,18 +579,64 @@ class ExtensionTemplateScript(scripts.Script):
 
         try:
             res_thres = CFGDenoiser.res_thres
+            reg_ini = CFGDenoiser.reg_ini
+            reg_range = CFGDenoiser.reg_range 
         except:
             res_thres = 0.1
+            reg_ini=1
+            reg_range=1
         # Create legend
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='green', label='Converged'),
                            Patch(facecolor='yellow', label='Barely Converged'),
                            Patch(facecolor='red', label='Not Converged')]
+        def get_title(reg_ini, reg_range, num_no_converge, pos_no_converge):
+            title = ""
+            prompts = ["Nice! All iterations converged.\n ",
+            "Lowering the regularization strength may be better.\n ",
+            "One iteration not converge, but it is OK.\n ",
+            "Two or more iteration not converge, maybe you should increase regularization strength.\n ",
+            "Steps in the middle didn't converge, maybe you should increase regularization time range.\n ",
+            "The regularization strength is already small. Increasing the number of basis worth a try.\n ",
+            "If you think context changed too much, increase the regularization strength. \n ",
+            "Increase the regularization strength may be better.\n ",
+            "If you think context changed too little, lower the regularization strength. \n ",
+            "If you think context changed too little, lower the regularization time range. \n "
+            ]
+            if num_no_converge <=0:
+                title += prompts[0]
+            if num_no_converge <=0 and reg_ini >= 0.3:
+                title += prompts[1]
+            if num_no_converge == 1:
+                title += prompts[2]
+                title += prompts[7]
+            if num_no_converge >1:
+                title += prompts[3]
+                title += prompts[7]
+            if pos_no_converge > 0.3:
+                title += prompts[4]
+            if num_no_converge <=0 and reg_ini < 0.3:
+                title += prompts[5]
+            if num_no_converge <=0 and reg_ini < 5:
+                title += prompts[6]
+            if num_no_converge <=0 and reg_ini >= 5:
+                title += prompts[8]
+                title += prompts[9]
+            alltitles = title.split("\n")[:-1]
+            n = np.random.randint(len(alltitles))
+            return alltitles[n]
         # Create bar plot
         fig, axs = plt.subplots(len(res), 1, figsize=(10, 4 * len(res)))
         if len(res) > 1:
             # Example plotting code
             for i in range(len(res)):
+                num_no_converge = 0
+                pos_no_converge = 0
+                for j, r in enumerate(res[i]):
+                    if r >= res_thres:
+                        num_no_converge+=1
+                        pos_no_converge = max(j,pos_no_converge)
+                pos_no_converge = pos_no_converge/(len(res[i])+1)
                 # Categorize each result and assign colors
                 colors = ['green' if r < res_thres else 'yellow' if r < 10 * res_thres else 'red' for r in res[i]]
                 axs[i].bar(range(len(ite_num[i])), ite_num[i], color=colors)
@@ -605,8 +651,18 @@ class ExtensionTemplateScript(scripts.Script):
                 ax2.set_ylabel('Regularization Level')
                 ax2.set_ylim(bottom=0.)
                 ax2.legend(loc='upper left')
+                title = get_title(reg_ini, reg_range, num_no_converge, pos_no_converge)
+                ax2.set_title(title)
+                ax2.autoscale()
             # axs[i].set_title('Convergence Status of Iterations for Each Step')
         elif len(res) == 1:
+            num_no_converge = 0
+            pos_no_converge = 0
+            for j, r in enumerate(res[0]):
+                if r >= res_thres:
+                    num_no_converge+=1
+                    pos_no_converge = max(j,pos_no_converge)
+            pos_no_converge = pos_no_converge/(len(res[0])+1)
             colors = ['green' if r < res_thres else 'yellow' if r < 10 * res_thres else 'red' for r in res[0]]
             axs.bar(range(len(ite_num[0])), ite_num[0], color=colors)
             # Create legend
@@ -616,10 +672,13 @@ class ExtensionTemplateScript(scripts.Script):
             axs.set_xlabel('Diffusion Step')
             axs.set_ylabel('Num. Characteristic Iteration')
             ax2 = axs.twinx()
+            title = get_title(reg_ini, reg_range, num_no_converge, pos_no_converge)
             ax2.plot(range(len(ite_num[0])), reg[0], linewidth=4, color='C1', label='Regularization Level')
             ax2.set_ylabel('Regularization Level')
             ax2.set_ylim(bottom=0.)
             ax2.legend(loc='upper left')
+            ax2.set_title(title)
+            ax2.autoscale()
         else:
             pass
             # axs.set_title('Convergence Status of Iterations for Each Step')
