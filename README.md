@@ -74,7 +74,7 @@ Please experiment with different settings, especially **regularization strength 
 ### How to Set Parameters (Preliminary Guide)
 Here is my recommended approach for parameter setting:
 
-1. Start by running characteristic guidance with the default parameters.
+1. Start by running characteristic guidance with the default parameters (Use `Regularization Strength`=5 for Stable Diffusion XL).
 2. Verify convergence by clicking the `Check Convergence` button.
 3. If convergence is achieved easily:
    - Decrease the `Regularization Strength` and `Regularization Range Over Time` to enhance correction.
