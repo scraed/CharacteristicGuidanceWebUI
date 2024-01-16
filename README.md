@@ -12,7 +12,7 @@ Characteristic guidance offers improved sample generation and control at high CF
   - Strange backgrounds
     
 Characteristic guidance is compatible with existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
-
+![1girl running mountain grass](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%2C%20running%2C%20mountain%2C%20grass.jpg?raw=true) 
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
 ![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.jpg?raw=true)
 ![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.jpg?raw=true)
