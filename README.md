@@ -1,18 +1,18 @@
 # Characteristic Guidance Web UI (enhanced sampling for high CFG scale)
 
 ## About
-Characteristic Guidance Web UI is a tool that offers theory-backed high CFG scale (10-30) correction for the Stable Diffusion web UI (AUTOMATIC1111), aims at enhancing the sampling and control quality of diffusion models at large CFG guidance scale.
+Characteristic Guidance Web UI is an extension of for the Stable Diffusion web UI (AUTOMATIC1111). It offers a theory-backed guidance sampling method with improved sample and control quality at high CFG scale (10-30).
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
 - Detail refinement
 - Fixing quality issues, like
   - Weird colors and styles
-  - Bad anatomy (not guaranteed :rofl:)
+  - Bad anatomy (not guaranteed :rofl:, works better on Stable Diffusion XL)
   - Strange backgrounds
     
-Characteristic guidance is compatible with existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
-
+Characteristic guidance is compatible with every existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
+![1girl running mountain grass](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%2C%20running%2C%20mountain%2C%20grass.jpg?raw=true) 
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
 ![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.jpg?raw=true)
 ![StrawberryPancake](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/StrawberryPancake.jpg?raw=true)
@@ -20,6 +20,12 @@ Characteristic guidance is compatible with existing sampling methods in Stable D
 
 For more information and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
 
+Q&A: What's the difference with dynamic thresholding?
+
+- **Characteristic Guidance**: Corrects both context and color, modify latents at the given CFG scale according to the Fokker-Planck equation. 
+- **Dynamical Thresholding**:  Mainly focusing on color, rescales quantiles of latents to mimic lower CFG scales.
+
+![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
 ## Prerequisites
 Before installing and using the Characteristic Guidance Web UI, ensure that you have the following prerequisites met:
 
@@ -74,7 +80,7 @@ Please experiment with different settings, especially **regularization strength 
 ### How to Set Parameters (Preliminary Guide)
 Here is my recommended approach for parameter setting:
 
-1. Start by running characteristic guidance with the default parameters.
+1. Start by running characteristic guidance with the default parameters (Use `Regularization Strength`=5 for Stable Diffusion XL).
 2. Verify convergence by clicking the `Check Convergence` button.
 3. If convergence is achieved easily:
    - Decrease the `Regularization Strength` and `Regularization Range Over Time` to enhance correction.
@@ -117,12 +123,10 @@ Here is my recommended approach for parameter setting:
 ## Compatibility and Issues
 
 ### Using Characteristic Guidance with Dynamical Thresholding
-It's advisable to be cautious when using [Characteristic Guidance](#) and [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding) simutaneously. These two extensions alter latents in theoretically different ways:
+Combining [Characteristic Guidance](#) and [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding) simutaneously won't cause code errors. It seems further reduce saturation. But please be cautious since these two extensions alter latents in theoretically different ways:
 
 - **Characteristic Guidance**: Corrects latents at the given CFG scale.
 - **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales.
-
-While combining them won't cause code errors, it may lead to unpredictable outcomes.
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
