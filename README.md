@@ -1,7 +1,7 @@
 # Characteristic Guidance Web UI (enhanced sampling for high CFG scale)
 
 ## About
-Characteristic Guidance Web UI is a tool that offers theory-backed high CFG scale (10-30) correction for the Stable Diffusion web UI (AUTOMATIC1111), aims at enhancing the sampling and control quality of diffusion models at large CFG guidance scale.
+Characteristic Guidance Web UI is an extension of for the Stable Diffusion web UI (AUTOMATIC1111). It offers a theory-backed guidance sampling method with improved sample and control quality at high CFG scale (10-30).
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
@@ -19,6 +19,11 @@ Characteristic guidance is compatible with existing sampling methods in Stable D
 ![1girl, kimono](https://scraed.github.io/CharacteristicGuidance/static/images/1girl%20kimono.jpg?raw=true)
 
 For more information and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
+
+Q&A: What's the difference with dynamic thresholding?
+
+- **Characteristic Guidance**: Corrects latents at the given CFG scale.
+- **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales.
 
 ## Prerequisites
 Before installing and using the Characteristic Guidance Web UI, ensure that you have the following prerequisites met:
