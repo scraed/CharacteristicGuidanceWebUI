@@ -22,7 +22,7 @@ For more information and previews, please visit our project website: [Characteri
 
 Q&A: What's the difference with dynamic thresholding?
 
-- **Characteristic Guidance**: Corrects latents at the given CFG scale.
+- **Characteristic Guidance**: Corrects latents at the given CFG scale using the Fokker-Planck equation.
 - **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales.
 
 ## Prerequisites
