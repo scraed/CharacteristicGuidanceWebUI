@@ -22,8 +22,8 @@ For more information and previews, please visit our project website: [Characteri
 
 Q&A: What's the difference with dynamic thresholding?
 
-- **Characteristic Guidance**: Corrects latents at the given CFG scale according to the Fokker-Planck equation, works on both color and context. 
-- **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales, mainly focusing on color.
+- **Characteristic Guidance**: Corrects both context and color, modify latents at the given CFG scale according to the Fokker-Planck equation. 
+- **Dynamical Thresholding**:  Mainly focusing on color, rescales quantiles of latents to mimic lower CFG scales.
 
 ![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
 ## Prerequisites
