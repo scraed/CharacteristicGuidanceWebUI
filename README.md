@@ -11,8 +11,7 @@ Characteristic guidance offers improved sample generation and control at high CF
   - Bad anatomy (not guaranteed :rofl:)
   - Strange backgrounds
     
-Characteristic guidance is compatible with existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
-![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
+Characteristic guidance is compatible with every existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
 ![1girl running mountain grass](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%2C%20running%2C%20mountain%2C%20grass.jpg?raw=true) 
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
 ![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.jpg?raw=true)
@@ -26,6 +25,7 @@ Q&A: What's the difference with dynamic thresholding?
 - **Characteristic Guidance**: Corrects latents at the given CFG scale according to the Fokker-Planck equation, works on both color and context. 
 - **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales, mainly focusing on color.
 
+![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
 ## Prerequisites
 Before installing and using the Characteristic Guidance Web UI, ensure that you have the following prerequisites met:
 
