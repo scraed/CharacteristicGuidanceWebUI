@@ -20,12 +20,15 @@ Characteristic guidance is compatible with every existing sampling methods in St
 
 For more information and previews, please visit our project website: [Characteristic Guidance Project Website](https://scraed.github.io/CharacteristicGuidance/). 
 
-Q&A: What's the difference with dynamic thresholding?
+Q&A: What's the difference with [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding)?
 
 - **Characteristic Guidance**: Corrects both context and color, modify latents at the given CFG scale according to the Fokker-Planck equation. 
 - **Dynamical Thresholding**:  Mainly focusing on color, rescales quantiles of latents to mimic lower CFG scales.
 
+You can use [Characteristic Guidance](#) and Dynamical Thresholding simutaneously. It may further reduce saturation. But please be cautious since they are theoretically different.
+
 ![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
+
 ## Prerequisites
 Before installing and using the Characteristic Guidance Web UI, ensure that you have the following prerequisites met:
 
@@ -46,7 +49,7 @@ Follow these steps to install the Characteristic Guidance Web UI extension:
 The Characteristic Guidance Web UI features an interactive interface for both txt2img and img2img mode. 
 ![Gradio UI for CharacteristicGuidanceWebUI](https://github.com/scraed/CharacteristicGuidanceWebUI/blob/main/CHGextension_pic.PNG?raw=true)
 
-The characteristic guidance is slow compared to classifier-free guidance. We recommend the user to generate image with classifier-free guidance at first, then try characteristic guidance with the same prompt and seed to enhance the image.
+**The characteristic guidance is slow compared to classifier-free guidance. We recommend the user to generate image with classifier-free guidance at first, then try characteristic guidance with the same prompt and seed to enhance the image.**
 
 Below are the parameters you can adjust to customize the behavior of the guidance correction:
 
@@ -121,12 +124,6 @@ Here is my recommended approach for parameter setting:
 
 
 ## Compatibility and Issues
-
-### Using Characteristic Guidance with Dynamical Thresholding
-Combining [Characteristic Guidance](#) and [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding) simutaneously won't cause code errors. It seems further reduce saturation. But please be cautious since these two extensions alter latents in theoretically different ways:
-
-- **Characteristic Guidance**: Corrects latents at the given CFG scale.
-- **Dynamical Thresholding**: Rescales quantiles of latents to mimic lower CFG scales.
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
