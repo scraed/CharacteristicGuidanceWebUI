@@ -581,16 +581,18 @@ class ExtensionTemplateScript(scripts.Script):
             res_thres = CFGDenoiser.res_thres
             reg_ini = CFGDenoiser.reg_ini
             reg_range = CFGDenoiser.reg_range 
+            noise_base = CFGDenoiser.noise_base
         except:
             res_thres = 0.1
             reg_ini=1
             reg_range=1
+            noise_base = 1
         # Create legend
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='green', label='Converged'),
                            Patch(facecolor='yellow', label='Barely Converged'),
                            Patch(facecolor='red', label='Not Converged')]
-        def get_title(reg_ini, reg_range, num_no_converge, pos_no_converge):
+        def get_title(reg_ini, reg_range, noise_base, num_no_converge, pos_no_converge):
             title = ""
             prompts = ["Nice! All iterations converged.\n ",
             "Lowering the regularization strength may be better.\n ",
@@ -601,7 +603,8 @@ class ExtensionTemplateScript(scripts.Script):
             "If you think context changed too much, increase the regularization strength. \n ",
             "Increase the regularization strength may be better.\n ",
             "If you think context changed too little, lower the regularization strength. \n ",
-            "If you think context changed too little, lower the regularization time range. \n "
+            "If you think context changed too little, lower the regularization time range. \n ",
+            "Number of Basis maybe too high, try lowering it. \n "
             ]
             if num_no_converge <=0:
                 title += prompts[0]
@@ -622,11 +625,13 @@ class ExtensionTemplateScript(scripts.Script):
             if num_no_converge <=0 and reg_ini >= 5:
                 title += prompts[8]
                 title += prompts[9]
+            if num_no_converge >=2 and noise_base >2:
+                title += prompts[10]
             alltitles = title.split("\n")[:-1]
             n = np.random.randint(len(alltitles))
             return alltitles[n]
         # Create bar plot
-        fig, axs = plt.subplots(len(res), 1, figsize=(10, 4 * len(res)))
+        fig, axs = plt.subplots(len(res), 1, figsize=(10, 4.5 * len(res)))
         if len(res) > 1:
             # Example plotting code
             for i in range(len(res)):
@@ -651,7 +656,7 @@ class ExtensionTemplateScript(scripts.Script):
                 ax2.set_ylabel('Regularization Level')
                 ax2.set_ylim(bottom=0.)
                 ax2.legend(loc='upper left')
-                title = get_title(reg_ini, reg_range, num_no_converge, pos_no_converge)
+                title = get_title(reg_ini, reg_range, noise_base, num_no_converge, pos_no_converge)
                 ax2.set_title(title)
                 ax2.autoscale()
             # axs[i].set_title('Convergence Status of Iterations for Each Step')
@@ -672,7 +677,7 @@ class ExtensionTemplateScript(scripts.Script):
             axs.set_xlabel('Diffusion Step')
             axs.set_ylabel('Num. Characteristic Iteration')
             ax2 = axs.twinx()
-            title = get_title(reg_ini, reg_range, num_no_converge, pos_no_converge)
+            title = get_title(reg_ini, reg_range, noise_base, num_no_converge, pos_no_converge)
             ax2.plot(range(len(ite_num[0])), reg[0], linewidth=4, color='C1', label='Regularization Level')
             ax2.set_ylabel('Regularization Level')
             ax2.set_ylim(bottom=0.)
