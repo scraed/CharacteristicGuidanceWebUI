@@ -22,10 +22,12 @@ For more information and previews, please visit our project website: [Characteri
 
 Q&A: What's the difference with [Dynamical Thresholding](https://github.com/mcmonkeyprojects/sd-dynamic-thresholding)?
 
+They are distinct and independent methods, can be used either independently or in conjunction.
+
 - **Characteristic Guidance**: Corrects both context and color, works at the given CFG scale, iteratively corrects **input** of the Unet according to the Fokker-Planck equation. 
 - **Dynamical Thresholding**:  Mainly focusing on color, works to mimic lower CFG scales, clips and rescales **output** of the Unet.
 
-You can use [Characteristic Guidance](#) and Dynamical Thresholding simutaneously. It may further reduce saturation.
+Using [Characteristic Guidance](#) and Dynamical Thresholding simutaneously may further reduce saturation.
 
 ![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
 
