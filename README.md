@@ -24,8 +24,8 @@ Q&A: What's the difference with [Dynamical Thresholding](https://github.com/mcmo
 
 They are distinct and independent methods, can be used either independently or in conjunction.
 
-- **Characteristic Guidance**: Corrects both context and color, works at the given CFG scale, iteratively corrects **input** of the Unet according to the Fokker-Planck equation. 
-- **Dynamical Thresholding**:  Mainly focusing on color, works to mimic lower CFG scales, clips and rescales **output** of the Unet.
+- **Characteristic Guidance**: Corrects both context and color, works at the given CFG scale, iteratively corrects **input** of the U-net according to the Fokker-Planck equation. 
+- **Dynamical Thresholding**:  Mainly focusing on color, works to mimic lower CFG scales, clips and rescales **output** of the U-net.
 
 Using [Characteristic Guidance](#) and Dynamical Thresholding simutaneously may further reduce saturation.
 
