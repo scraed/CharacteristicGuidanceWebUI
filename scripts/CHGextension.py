@@ -107,22 +107,7 @@ def proj_least_squares(A, B, reg):
     return B_proj
 
 
-def downsample_reg_g(dx, g_1, reg):
-    # DDec_dx = DDec(dx)
-    # down_DDec_dx = downsample(DDec_dx, factor=factor)
-    # DEnc_dx = DEnc(down_DDec_dx)
-    # return DEnc_dx
 
-    if g_1 is None:
-        return dx
-    else:
-        # return g_1*torch.sum(g_1*dx, dim = (-1,-2), keepdim=True )/torch.sum( g_1**2, dim = (-1,-2) , keepdim=True )
-        A = g_1.reshape(g_1.shape[0] * g_1.shape[1], g_1.shape[2] * g_1.shape[3], g_1.shape[4])
-        B = dx.reshape(dx.shape[0] * dx.shape[1], -1, 1)
-        regl = reg[:, None].expand(-1, dx.shape[1]).reshape(dx.shape[0] * dx.shape[1], 1, 1)
-        dx_proj = proj_least_squares(A, B, regl)
-
-        return dx_proj.reshape(*dx.shape)
 
 
 
@@ -396,6 +381,31 @@ class CHGDenoiser(CFGDenoiser):
                     # print("gO",gO.shape)
                     # print("gamma",gamma.shape)
                     return dxsO, dgO, resxO, resgO
+
+            def downsample_reg_g(dx, g_1, reg):
+                # DDec_dx = DDec(dx)
+                # down_DDec_dx = downsample(DDec_dx, factor=factor)
+                # DEnc_dx = DEnc(down_DDec_dx)
+                # return DEnc_dx
+
+                if g_1 is None:
+                    return dx
+                elif self.noise_base >= 1:
+                    # return g_1*torch.sum(g_1*dx, dim = (-1,-2), keepdim=True )/torch.sum( g_1**2, dim = (-1,-2) , keepdim=True )
+                    A = g_1.reshape(g_1.shape[0] * g_1.shape[1], g_1.shape[2] * g_1.shape[3], g_1.shape[4])
+                    B = dx.reshape(dx.shape[0] * dx.shape[1], -1, 1)
+                    regl = reg[:, None].expand(-1, dx.shape[1]).reshape(dx.shape[0] * dx.shape[1], 1, 1)
+                    dx_proj = proj_least_squares(A, B, regl)
+
+                    return dx_proj.reshape(*dx.shape)
+                else:
+                    # return g_1*torch.sum(g_1*dx, dim = (-1,-2), keepdim=True )/torch.sum( g_1**2, dim = (-1,-2) , keepdim=True )
+                    A = g_1.reshape(g_1.shape[0], g_1.shape[1]* g_1.shape[2] * g_1.shape[3], g_1.shape[4])
+                    B = dx.reshape(dx.shape[0], -1, 1)
+                    regl = reg[:, None].reshape(dx.shape[0], 1, 1)
+                    dx_proj = proj_least_squares(A, B, regl)
+
+                    return dx_proj.reshape(*dx.shape)
             g_1 = None
 
             reg_level = torch.zeros(dxs.shape[0], device=dxs.device) + max(5,self.reg_ini)
@@ -453,7 +463,7 @@ class CHGDenoiser(CFGDenoiser):
                 # print("print(reg_level.shape)", reg_level.shape)
                 g = dxs - downsample_reg_g(ggg, g_1, reg_level)
                 if g_1 is None:
-                    g_1 = split_basis(g, self.noise_base)
+                    g_1 = split_basis(g, max( self.noise_base,1 ) )
                     # if self.Projg:
                     #        g_1 = split_basis( g, self.noise_base)
                     # else:
@@ -463,9 +473,14 @@ class CHGDenoiser(CFGDenoiser):
                     # if self.noise_base > 0:
                     #    noise_base = torch.randn(g_1.shape[0],g_1.shape[1],g_1.shape[2],g_1.shape[3],self.noise_base, device=g_1.device)
                     #    g_1 = torch.cat([g_1, noise_base], dim=-1)
-                    g_1_norm = torch.sum(g_1 ** 2, dim=(-2, -3), keepdim=True) ** 0.5
-                    g_1 = g_1 / torch.maximum(g_1_norm, torch.ones_like(
-                        g_1_norm) * 1e-4)  # + self.noise_level*noise/torch.sum( noise**2, dim = (-1,-2) , keepdim=True )
+                    if self.noise_base >=1:
+                        g_1_norm = torch.sum(g_1 ** 2, dim=(-2, -3), keepdim=True) ** 0.5
+                        g_1 = g_1 / torch.maximum(g_1_norm, torch.ones_like(
+                            g_1_norm) * 1e-4)  # + self.noise_level*noise/torch.sum( noise**2, dim = (-1,-2) , keepdim=True )
+                    else:
+                        g_1_norm = torch.sum(g_1 ** 2, dim=(-2, -3, -4), keepdim=True) ** 0.5
+                        g_1 = g_1 / torch.maximum(g_1_norm, torch.ones_like(
+                            g_1_norm) * 1e-4)  # + self.noise_level*noise/torch.sum( noise**2, dim = (-1,-2) , keepdim=True )
                 # Compute regularization level
                 reg_Acc = (reg_level * self.reg_w) ** 0.5
                 reg_target = (reg_target_level * self.reg_w) ** 0.5
@@ -506,9 +521,12 @@ class CHGDenoiser(CFGDenoiser):
                 # v = beta*v + (1-beta)*g**2
                 # m = beta_m*m + (1-beta_m)*g
                 # g/(v**0.5+eps_delta)
-
+                if self.noise_base >=1:
+                    aa_dim = self.aa_dim
+                else:
+                    aa_dim = 1
                 dxs_Acc, g_Acc, reg_dxs_Acc, reg_g_Acc = AndersonAccR(dxs, g, reg_Acc, reg_target, pre_condition=None,
-                                                                    m=self.aa_dim + 1)
+                                                                    m=aa_dim + 1)
                 # print(Accout)
                 #
                 dxs = dxs_Acc - self.lr_chara * g_Acc
@@ -717,14 +735,14 @@ class ExtensionTemplateScript(scripts.Script):
                 minimum=1,
                 maximum=50,
                 step=1,
-                value=30,
+                value=50,
                 label="Max Num. Characteristic Iteration ( → Slow but Better Convergence)",
             )
             noise_base = gr.Slider(
-                minimum=1,
+                minimum=0,
                 maximum=10,
                 step=1,
-                value=1,
+                value=0,
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
             )
             chara_decay = gr.Slider(
@@ -808,7 +826,7 @@ class ExtensionTemplateScript(scripts.Script):
             (reg_size, get_chg_parameter('ASpeed')),
             (reg_w, get_chg_parameter('AStrength')),
             (aa_dim, get_chg_parameter('AADim')),
-            (radio, get_chg_parameter('CMode')),
+            (radio, get_chg_parameter('CMode'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
