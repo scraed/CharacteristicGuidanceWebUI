@@ -101,6 +101,7 @@ Here is my recommended approach for parameter setting:
 ## Updates
 ### January 28, 2024: Allow Num. Basis for Correction = 0
 - **Effect**: Now the default Num. Basis for Correction takes value 0 which means batch-wise correction instead of channel-wise correction. It is a more suitable default value since it converges faster.
+- **User Action Required**: Please delete "ui-config.json" from the stable diffusion WebUI root directory for the update to take effect.
 
 ### January 14, 2024: Bug fix: allow prompts with more than 75 tokens
 - **Effect**: Now the extension still works if the prompt have more than 75 tokens.
