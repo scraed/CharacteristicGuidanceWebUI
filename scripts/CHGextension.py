@@ -626,7 +626,7 @@ class ExtensionTemplateScript(scripts.Script):
             ]
             if num_no_converge <=0:
                 title += prompts[0]
-            if num_no_converge <=0 and reg_ini >= 0.3:
+            if num_no_converge <=0 and reg_ini > 0.5:
                 title += prompts[1]
             if num_no_converge == 1:
                 title += prompts[2]
@@ -636,7 +636,7 @@ class ExtensionTemplateScript(scripts.Script):
                 title += prompts[7]
             if pos_no_converge > 0.3:
                 title += prompts[4]
-            if num_no_converge <=0 and reg_ini < 0.3:
+            if num_no_converge <=0 and reg_ini <= 0.5:
                 title += prompts[5]
             if num_no_converge <=0 and reg_ini < 5:
                 title += prompts[6]
