@@ -58,8 +58,8 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 ### Basic Parameters
 - `Regularization Strength`: Range 0.0 to 10.0 (default: 1). Adjusts the strength of regularization at the beginning of sampling, larger regularization means easier convergence and closer alignment with CFG (Classifier Free Guidance).
 - `Regularization Range Over Time`: Range 0.01 to 10.0 (default: 1). Modifies the range of time being regularized, larger time means slow decay in regularization strength hence more time steps being regularized, affecting convergence difficulty and the extent of correction.
-- `Max Num. Characteristic Iteration`: Range 1 to 50 (default: 30). Determines the maximum number of characteristic iterations per sampling time step.
-- `Num. Basis for Correction`: Range 1 to 6 (default: 1). Sets the number of bases for correction, influencing the amount of correction and convergence behavior. More basis means better quality but harder convergence
+- `Max Num. Characteristic Iteration`: Range 1 to 50 (default: 50). Determines the maximum number of characteristic iterations per sampling time step.
+- `Num. Basis for Correction`: Range 0 to 6 (default: 0). Sets the number of bases for correction, influencing the amount of correction and convergence behavior. More basis means better quality but harder convergence. Basis number = 0 means batch-wise correction, > 0 means channel-wise correction. 
 - `Reuse Correction of Previous Iteration`: Range 0.0 to 1.0 (default: 0.0). Controls the reuse of correction from previous iterations to reduce abrupt changes during generation. Suppress Abrupt Changes During Generation. **Don't adjust this parameter, adjust regularization instead. I'm thinking about modifying this parameter**
 - `ControlNet Compatible Mode`
   - `More Prompt`: Controlnet is turned off when iteratively solving characteristic guidance correction.
@@ -99,6 +99,8 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+### January 28, 2024: Allow Num. Basis for Correction = 0
+- **Effect**: Now the default Num. Basis for Correction takes value 0 which means batch-wise correction instead of channel-wise correction. It is a more suitable default value since it converges faster.
 
 ### January 14, 2024: Bug fix: allow prompts with more than 75 tokens
 - **Effect**: Now the extension still works if the prompt have more than 75 tokens.
