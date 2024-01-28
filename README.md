@@ -53,6 +53,14 @@ The Characteristic Guidance Web UI features an interactive interface for both tx
 
 **The characteristic guidance is slow compared to classifier-free guidance. We recommend the user to generate image with classifier-free guidance at first, then try characteristic guidance with the same prompt and seed to enhance the image.**
 
+### Activation
+- `Enable` Checkbox: Toggles the activation of the Characteristic Guidance features.
+
+### Visualization and Testing
+- `Check Convergence` Button: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
+
+In practice, convergence is not always guaranteed. **If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step**. 
+
 Below are the parameters you can adjust to customize the behavior of the guidance correction:
 
 ### Basic Parameters
@@ -72,13 +80,6 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 - `Regularization Annealing Strength`: Range 0.0 to 5 (default: 0.5). Determines the how important regularization annealing is in characteristic guidance interations. Higher value means higher priority to bring regularization level to specified regularization strength. Affecting the balance between annealing and convergence.
 - `AA Iteration Memory Size`: Range 1 to 10 (default: 2). Specifies the memory size for AA (Anderson Acceleration) iterations, influencing convergence speed and stability.
 
-### Activation
-- `Enable` Checkbox: Toggles the activation of the Characteristic Guidance features.
-
-### Visualization and Testing
-- `Check Convergence` Button: Allows users to test and visualize the convergence of their settings. Adjust the regularization parameters if the convergence is not satisfactory.
-
-In practice, convergence is not always guaranteed. **If characteristic guidance fails to converge at a certain time step, classifier-free guidance will be adopted at that time step**. 
 
 Please experiment with different settings, especially **regularization strength and time range**, to achieve better convergence for your specific use case. (According to my experience, high CFG scale need relatively large regularization strength and time range for convergence, while low CFG scale prefers lower regularization strength and time range for more guidance correction.)
 
