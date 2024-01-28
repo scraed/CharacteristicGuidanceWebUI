@@ -44,16 +44,10 @@ def solve_least_squares(A, B):
     # min_eigenvalues = torch.min( torch.linalg.eigvalsh(C), dim=-1 )
     # eps_e = torch.maximum( min_eigenvalues, min_eigenvalues.new_ones(min_eigenvalues.shape)*1e-3 )[...,]
     C = torch.matmul(A.transpose(-2, -1), A)  # + eps_e*torch.eye(A.shape[-1], device=A.device)
-    # Compute the eigenvalues and eigenvectors of C
-    eigenvalues, eigenvectors = torch.linalg.eigh(C)
-
-    # eigenvalues = torch.maximum( eigenvalues,eigenvalues*0+1e-3  )
-
-    # Diagonal matrix with non-zero eigenvalues in the diagonal
-    D_inv = torch.diag_embed(1.0 / torch.maximum(eigenvalues, torch.ones_like(eigenvalues) * 1e-4))
-
     # Compute the pseudo-inverse of C
-    C_inv = torch.matmul(torch.matmul(eigenvectors, D_inv), eigenvectors.transpose(-2, -1))
+    U, S, Vh = torch.linalg.svd(C.float(), full_matrices=False)
+    D_inv = torch.diag_embed(1.0 / torch.maximum(S, torch.ones_like(S) * 1e-4))
+    C_inv = Vh.transpose(-1,-2).matmul(D_inv).matmul(U.transpose(-1,-2))
 
     # Compute X = C_inv A^T B
     X = torch.matmul(torch.matmul(C_inv, A.transpose(-2, -1)), B)
@@ -368,6 +362,8 @@ class CHGDenoiser(CFGDenoiser):
                     # gB_norm = torch.sum( gB**2, dim = -2 , keepdim=True )**0.5 + 1e-6
                     # gamma = solve_least_squares(gA/gA_norm, gB)
                     gamma = torch.linalg.lstsq(gA / gA_norm, gB).solution
+                    if torch.sum( torch.isnan(gamma) ) > 0:
+                        gamma = solve_least_squares(gA/gA_norm, gB)
                     xA = torch.cat([x[..., None] for x in dxs_Anderson[:-1]], dim=-1)
                     xB = dxs_Anderson[-1][..., None]
                     # print("xO print",xB.shape, xA.shape, gA_norm.shape, gamma.shape)
@@ -429,41 +425,44 @@ class CHGDenoiser(CFGDenoiser):
             for iteration in range(n_iterations):
                 # important to keep iteration content consistent
                 # Supoort AND prompt combination by using multiple dxs for condition part
-                dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
-                dxs_add = torch.cat([ dxs_cond_part, h * dxs], axis=0)
-                if isinstance(self.inner_model, CompVisDenoiser):
-                    #eps_out = self.inner_model.get_eps(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
-                    eps_out = evaluation(eps_evaluation, x_in * c_in + dxs_add * c_in, (tensor, uncond, cond_in), t_in, image_cond_in)
-                    pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                    eps_cond_batch = eps_out[:-uncond.shape[0]]
-                    eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
-                    pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
-                    ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
-                elif isinstance(self.inner_model, CompVisVDenoiser):
-                    #v_out = self.inner_model.get_v(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
-                    v_out = evaluation(v_evaluation, x_in * c_in + dxs_add * c_in, (tensor, uncond, cond_in), t_in, image_cond_in)
-                    eps_out = -c_out*x_in + c_skip**0.5*v_out
-                    pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                    eps_cond_batch = eps_out[:-uncond.shape[0]]
-                    eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
-                    pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
-                    ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
-                elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
-                                                                                        CompVisTimestepsVDenoiser):
-                    #eps_out = self.inner_model(x_in + dxs_add, t_in, cond=cond)
-                    eps_out = evaluation(eps_legacy_evaluation, x_in + dxs_add, (tensor, uncond, cond_in), t_in, image_cond_in)
-                    pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                    eps_cond_batch = eps_out[:-uncond.shape[0]]
-                    eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
-                    pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
-                    ggg = (pred_eps_uncond - pred_eps_cond) * scale
-                else:
-                    raise NotImplementedError()
-
+                def compute_correction_direction(dxs):
+                    dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
+                    dxs_add = torch.cat([ dxs_cond_part, h * dxs], axis=0)
+                    if isinstance(self.inner_model, CompVisDenoiser):
+                        #eps_out = self.inner_model.get_eps(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
+                        eps_out = evaluation(eps_evaluation, x_in * c_in + dxs_add * c_in, (tensor, uncond, cond_in), t_in, image_cond_in)
+                        pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                        eps_cond_batch = eps_out[:-uncond.shape[0]]
+                        eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                        pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
+                        ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
+                    elif isinstance(self.inner_model, CompVisVDenoiser):
+                        #v_out = self.inner_model.get_v(x_in * c_in + dxs_add * c_in, t_in, cond=cond)
+                        v_out = evaluation(v_evaluation, x_in * c_in + dxs_add * c_in, (tensor, uncond, cond_in), t_in, image_cond_in)
+                        eps_out = -c_out*x_in + c_skip**0.5*v_out
+                        pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                        eps_cond_batch = eps_out[:-uncond.shape[0]]
+                        eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                        pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
+                        ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
+                    elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
+                                                                                            CompVisTimestepsVDenoiser):
+                        #eps_out = self.inner_model(x_in + dxs_add, t_in, cond=cond)
+                        eps_out = evaluation(eps_legacy_evaluation, x_in + dxs_add, (tensor, uncond, cond_in), t_in, image_cond_in)
+                        pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                        eps_cond_batch = eps_out[:-uncond.shape[0]]
+                        eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                        pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
+                        ggg = (pred_eps_uncond - pred_eps_cond) * scale
+                    else:
+                        raise NotImplementedError()
+                    return ggg
+                ggg = compute_correction_direction(dxs)
                 # print("print(reg_level.shape)", reg_level.shape)
                 g = dxs - downsample_reg_g(ggg, g_1, reg_level)
                 if g_1 is None:
-                    g_1 = split_basis(g, max( self.noise_base,1 ) )
+                    g_basis = -compute_correction_direction(dxs*0)
+                    g_1 = split_basis(g_basis, max( self.noise_base,1 ) )
                     # if self.Projg:
                     #        g_1 = split_basis( g, self.noise_base)
                     # else:
@@ -745,14 +744,14 @@ class ExtensionTemplateScript(scripts.Script):
                 value=0,
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
             )
-            chara_decay = gr.Slider(
-                minimum=0.,
-                maximum=1.,
-                step=0.01,
-                value=0.,
-                label="Reuse Correction of Previous Iteration ( → Suppress Abrupt Changes During Generation  )",
-            )
             with gr.Accordion('Advanced', open=False):
+                chara_decay = gr.Slider(
+                    minimum=0.,
+                    maximum=1.,
+                    step=0.01,
+                    value=1.,
+                    label="Reuse Correction of Previous Iteration ( → Suppress Abrupt Changes During Generation  )",
+                )
                 res = gr.Slider(
                     minimum=-6,
                     maximum=-2,
