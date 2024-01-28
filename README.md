@@ -94,8 +94,6 @@ Here is my recommended approach for parameter setting:
 4. If convergence is not reached:
    - Increment the `Max Num. Characteristic Iteration` to allow for additional iterations.
    - Should convergence still not occur, raise the `Regularization Strength` and `Regularization Range Over Time` for increased regularization.
-5. To address abrupt changes in the plotted content during sampling (commonly due to unconverged steps):
-   - Increase the `Reuse Correction of Previous Iteration` to mitigate this issue.
 
 
 
