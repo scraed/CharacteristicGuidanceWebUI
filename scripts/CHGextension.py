@@ -108,6 +108,12 @@ def proj_least_squares(A, B, reg):
 class CHGDenoiser(CFGDenoiser):
     def __init__(self, sampler):
         super().__init__(sampler)
+    
+    # def _call_forward(self, *args, **kwargs):
+    #     if self.step < self.stop_step:
+    #         return CHGDenoiser.Chara_forward(self, *args, **kwargs)
+    #     else:
+    #         return CFGDenoiser.forward(self, *args, **kwargs)
 
     def forward(self, x, sigma, uncond, cond, cond_scale, s_min_uncond, image_cond):
         if state.interrupted or state.skipped:
@@ -744,6 +750,13 @@ class ExtensionTemplateScript(scripts.Script):
                 value=0,
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
             )
+            stop_step = gr.Slider(
+                minimum=0,
+                maximum=1,
+                step=0.01,
+                value=1,
+                label="Stop at Step ( Use CFG after this percent of steps )",
+            )
             with gr.Accordion('Advanced', open=False):
                 chara_decay = gr.Slider(
                     minimum=0.,
@@ -825,14 +838,15 @@ class ExtensionTemplateScript(scripts.Script):
             (reg_size, get_chg_parameter('ASpeed')),
             (reg_w, get_chg_parameter('AStrength')),
             (aa_dim, get_chg_parameter('AADim')),
-            (radio, get_chg_parameter('CMode'))
+            (radio, get_chg_parameter('CMode')),
+            (stop_step, get_chg_parameter('SaS'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio]
+        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, stop_step]
 
     def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, **kwargs):
+                      checkbox, markdown, radio, stop_step, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -847,7 +861,8 @@ class ExtensionTemplateScript(scripts.Script):
                 'ASpeed': reg_size,
                 'AStrength': reg_w,
                 'AADim': aa_dim,
-                'CMode': radio
+                'CMode': radio,
+                'SaS': stop_step, 
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
             print("Characteristic Guidance parameters registered")
@@ -856,15 +871,20 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, **kwargs):
+                      checkbox, markdown, radio, stop_step, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
+                def _call_forward(self, *args, **kwargs):
+                    if self.step < self.stop_step:
+                        return CHGDenoiser.forward(self, *args, **kwargs)
+                    else:
+                        return original_forward(self, *args, **kwargs)
                 # modules = sys.modules
                 if checkbox:
                     # from ssd_samplers_chg_denoiser import CFGDenoiser as CHGDenoiser
                     print("Characteristic Guidance injecting the CFGDenoiser")
                     original_forward = CFGDenoiser.forward
-                    CFGDenoiser.forward = CHGDenoiser.forward
+                    CFGDenoiser.forward = _call_forward
                     CFGDenoiser.Chara_iteration = CHGDenoiser.Chara_iteration
                     CFGDenoiser.res_thres = 10 ** res
                     CFGDenoiser.noise_base = noise_base
@@ -889,6 +909,7 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.chara_decay = chara_decay
                     CFGDenoiser.process_p = p
                     CFGDenoiser.radio_controlnet = radio
+                    CFGDenoiser.stop_step = min(max(0, round(p.steps * stop_step)), p.steps)
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
                         print("Characteristic Guidance sampling:")
