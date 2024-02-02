@@ -758,7 +758,6 @@ class ExtensionTemplateScript(scripts.Script):
                     step=0.01,
                     value=1.0,
                     label="CHG End Step ( → Use CFG after Percent of Steps, Closer to Classifier-Free.)",
-                    label="Use CFG after Percent Step ( → Lower Quality, Closer to Classifier-Free.)",
                 )
                 n_step = gr.Slider(
                     minimum=1,
