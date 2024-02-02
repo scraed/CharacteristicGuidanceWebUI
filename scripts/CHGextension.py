@@ -759,13 +759,6 @@ class ExtensionTemplateScript(scripts.Script):
                     value=1.0,
                     label="CHG End Step ( → Use CFG after Percent of Steps, Closer to Classifier-Free.)",
                 )
-                n_step = gr.Slider(
-                    minimum=1,
-                    maximum=10,
-                    step=1,
-                    value=1,
-                    label="Use Characteristic Guidance each n steps ( → Lower Quality, Closer to Classifier-Free.)",
-                )
             with gr.Accordion('Advanced', open=False):
                 chara_decay = gr.Slider(
                     minimum=0.,
@@ -849,15 +842,14 @@ class ExtensionTemplateScript(scripts.Script):
             (aa_dim, get_chg_parameter('AADim')),
             (radio, get_chg_parameter('CMode')),
             (start_step, get_chg_parameter('StartStep')),
-            (stop_step, get_chg_parameter('StopStep')),
-            (n_step, get_chg_parameter('NStep'))
+            (stop_step, get_chg_parameter('StopStep'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step, n_step]
+        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step]
 
     def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, start_step, stop_step, n_step, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -873,9 +865,8 @@ class ExtensionTemplateScript(scripts.Script):
                 'AStrength': reg_w,
                 'AADim': aa_dim,
                 'CMode': radio,
-                'StartStep': start_step, 
-                'StopStep': stop_step, 
-                'NStep': n_step, 
+                'StartStep': start_step,
+                'StopStep': stop_step,
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
             print("Characteristic Guidance parameters registered")
@@ -884,12 +875,11 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, start_step, stop_step, n_step, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 def _call_forward(self, *args, **kwargs):
-                    if self.step % self.n_step == 0 \
-                        and self.start_step <= self.step < self.stop_step:
+                    if self.start_step <= self.step < self.stop_step:
                         return CHGDenoiser.forward(self, *args, **kwargs)
                     else:
                         return original_forward(self, *args, **kwargs)
@@ -926,7 +916,6 @@ class ExtensionTemplateScript(scripts.Script):
                     constrain_step = lambda total_step, step_pct: max(0, min(round(total_step * step_pct), total_step))
                     CFGDenoiser.start_step = constrain_step(p.steps, start_step)
                     CFGDenoiser.stop_step = constrain_step(p.steps, stop_step)
-                    CFGDenoiser.n_step = max(1, n_step)
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
                         print("Characteristic Guidance sampling:")
