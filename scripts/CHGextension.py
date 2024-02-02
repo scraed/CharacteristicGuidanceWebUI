@@ -745,11 +745,19 @@ class ExtensionTemplateScript(scripts.Script):
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
             )
             with gr.Row(open=True):
+                start_step = gr.Slider(
+                    minimum=0.0,
+                    maximum=1.0,
+                    step=0.01,
+                    value=0.0,
+                    label="CHG Start Step ( → Use CFG before Percent of Steps, Closer to Classifier-Free.)",
+                )
                 stop_step = gr.Slider(
                     minimum=0.0,
                     maximum=1.0,
                     step=0.01,
                     value=1.0,
+                    label="CHG End Step ( → Use CFG after Percent of Steps, Closer to Classifier-Free.)",
                     label="Use CFG after Percent Step ( → Lower Quality, Closer to Classifier-Free.)",
                 )
                 n_step = gr.Slider(
@@ -841,15 +849,16 @@ class ExtensionTemplateScript(scripts.Script):
             (reg_w, get_chg_parameter('AStrength')),
             (aa_dim, get_chg_parameter('AADim')),
             (radio, get_chg_parameter('CMode')),
+            (start_step, get_chg_parameter('StartStep')),
             (stop_step, get_chg_parameter('StopStep')),
             (n_step, get_chg_parameter('NStep'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, stop_step, n_step]
+        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step, n_step]
 
     def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, stop_step, n_step, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, n_step, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -865,6 +874,7 @@ class ExtensionTemplateScript(scripts.Script):
                 'AStrength': reg_w,
                 'AADim': aa_dim,
                 'CMode': radio,
+                'StartStep': start_step, 
                 'StopStep': stop_step, 
                 'NStep': n_step, 
             }
@@ -875,11 +885,12 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, stop_step, n_step, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, n_step, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 def _call_forward(self, *args, **kwargs):
-                    if self.step % self.n_step == 0 and self.step < self.stop_step:
+                    if self.step % self.n_step == 0 \
+                        and self.start_step <= self.step < self.stop_step:
                         return CHGDenoiser.forward(self, *args, **kwargs)
                     else:
                         return original_forward(self, *args, **kwargs)
@@ -913,7 +924,9 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.chara_decay = chara_decay
                     CFGDenoiser.process_p = p
                     CFGDenoiser.radio_controlnet = radio
-                    CFGDenoiser.stop_step = max(0, min(round(p.steps * stop_step), p.steps))
+                    constrain_step = lambda total_step, step_pct: max(0, min(round(total_step * step_pct), total_step))
+                    CFGDenoiser.start_step = constrain_step(p.steps, start_step)
+                    CFGDenoiser.stop_step = constrain_step(p.steps, stop_step)
                     CFGDenoiser.n_step = max(1, n_step)
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
