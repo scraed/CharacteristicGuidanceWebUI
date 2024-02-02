@@ -108,12 +108,6 @@ def proj_least_squares(A, B, reg):
 class CHGDenoiser(CFGDenoiser):
     def __init__(self, sampler):
         super().__init__(sampler)
-    
-    # def _call_forward(self, *args, **kwargs):
-    #     if self.step < self.stop_step:
-    #         return CHGDenoiser.Chara_forward(self, *args, **kwargs)
-    #     else:
-    #         return CFGDenoiser.forward(self, *args, **kwargs)
 
     def forward(self, x, sigma, uncond, cond, cond_scale, s_min_uncond, image_cond):
         if state.interrupted or state.skipped:
