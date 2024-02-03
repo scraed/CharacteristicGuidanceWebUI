@@ -599,11 +599,13 @@ class ExtensionTemplateScript(scripts.Script):
             reg_ini = CFGDenoiser.reg_ini
             reg_range = CFGDenoiser.reg_range 
             noise_base = CFGDenoiser.noise_base
+            start_step = CFGDenoiser.chg_start_step
         except:
             res_thres = 0.1
             reg_ini=1
             reg_range=1
             noise_base = 1
+            start_step = 0
         # Create legend
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='green', label='Converged'),
@@ -661,7 +663,7 @@ class ExtensionTemplateScript(scripts.Script):
                 pos_no_converge = pos_no_converge/(len(res[i])+1)
                 # Categorize each result and assign colors
                 colors = ['green' if r < res_thres else 'yellow' if r < 10 * res_thres else 'red' for r in res[i]]
-                axs[i].bar(range(len(ite_num[i])), ite_num[i], color=colors)
+                axs[i].bar(np.arange(len(ite_num[i]))+start_step, ite_num[i], color=colors)
                 # Create legend
                 axs[i].legend(handles=legend_elements, loc='upper right')
 
@@ -669,7 +671,7 @@ class ExtensionTemplateScript(scripts.Script):
                 axs[i].set_xlabel('Diffusion Step')
                 axs[i].set_ylabel('Num. Characteristic Iteration')
                 ax2 = axs[i].twinx()
-                ax2.plot(range(len(ite_num[i])), reg[i], linewidth=4, color='C1', label='Regularization Level')
+                ax2.plot(np.arange(len(ite_num[i]))+start_step, reg[i], linewidth=4, color='C1', label='Regularization Level')
                 ax2.set_ylabel('Regularization Level')
                 ax2.set_ylim(bottom=0.)
                 ax2.legend(loc='upper left')
@@ -686,7 +688,7 @@ class ExtensionTemplateScript(scripts.Script):
                     pos_no_converge = max(j,pos_no_converge)
             pos_no_converge = pos_no_converge/(len(res[0])+1)
             colors = ['green' if r < res_thres else 'yellow' if r < 10 * res_thres else 'red' for r in res[0]]
-            axs.bar(range(len(ite_num[0])), ite_num[0], color=colors)
+            axs.bar(np.arange(len(ite_num[0]))+start_step, ite_num[0], color=colors)
             # Create legend
             axs.legend(handles=legend_elements, loc='upper right')
 
@@ -695,7 +697,7 @@ class ExtensionTemplateScript(scripts.Script):
             axs.set_ylabel('Num. Characteristic Iteration')
             ax2 = axs.twinx()
             title = get_title(reg_ini, reg_range, noise_base, num_no_converge, pos_no_converge)
-            ax2.plot(range(len(ite_num[0])), reg[0], linewidth=4, color='C1', label='Regularization Level')
+            ax2.plot(np.arange(len(ite_num[0]))+start_step, reg[0], linewidth=4, color='C1', label='Regularization Level')
             ax2.set_ylabel('Regularization Level')
             ax2.set_ylim(bottom=0.)
             ax2.legend(loc='upper left')
@@ -715,7 +717,7 @@ class ExtensionTemplateScript(scripts.Script):
 
     # Setup menu ui detail
     def ui(self, is_img2img):
-        with gr.Accordion('Characteristic Guidance', open=False):
+        with gr.Accordion('Characteristic Guidance (CHG)', open=False):
             reg_ini = gr.Slider(
                 minimum=0.0,
                 maximum=10.,
@@ -744,6 +746,21 @@ class ExtensionTemplateScript(scripts.Script):
                 value=0,
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
             )
+            with gr.Row(open=True):
+                start_step = gr.Slider(
+                    minimum=0.0,
+                    maximum=0.25,
+                    step=0.01,
+                    value=0.0,
+                    label="CHG Start Step ( Use CFG before Percent of Steps. )",
+                )
+                stop_step = gr.Slider(
+                    minimum=0.25,
+                    maximum=1.0,
+                    step=0.01,
+                    value=1.0,
+                    label="CHG End Step ( Use CFG after Percent of Steps. )",
+                )
             with gr.Accordion('Advanced', open=False):
                 chara_decay = gr.Slider(
                     minimum=0.,
@@ -825,14 +842,16 @@ class ExtensionTemplateScript(scripts.Script):
             (reg_size, get_chg_parameter('ASpeed')),
             (reg_w, get_chg_parameter('AStrength')),
             (aa_dim, get_chg_parameter('AADim')),
-            (radio, get_chg_parameter('CMode'))
+            (radio, get_chg_parameter('CMode')),
+            (start_step, get_chg_parameter('StartStep')),
+            (stop_step, get_chg_parameter('StopStep'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio]
+        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step]
 
     def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -847,7 +866,9 @@ class ExtensionTemplateScript(scripts.Script):
                 'ASpeed': reg_size,
                 'AStrength': reg_w,
                 'AADim': aa_dim,
-                'CMode': radio
+                'CMode': radio,
+                'StartStep': start_step,
+                'StopStep': stop_step,
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
             print("Characteristic Guidance parameters registered")
@@ -856,7 +877,7 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 # modules = sys.modules
@@ -864,7 +885,12 @@ class ExtensionTemplateScript(scripts.Script):
                     # from ssd_samplers_chg_denoiser import CFGDenoiser as CHGDenoiser
                     print("Characteristic Guidance injecting the CFGDenoiser")
                     original_forward = CFGDenoiser.forward
-                    CFGDenoiser.forward = CHGDenoiser.forward
+                    def _call_forward(self, *args, **kwargs):
+                        if self.chg_start_step <= self.step < self.chg_stop_step:
+                            return CHGDenoiser.forward(self, *args, **kwargs)
+                        else:
+                            return original_forward(self, *args, **kwargs)
+                    CFGDenoiser.forward = _call_forward
                     CFGDenoiser.Chara_iteration = CHGDenoiser.Chara_iteration
                     CFGDenoiser.res_thres = 10 ** res
                     CFGDenoiser.noise_base = noise_base
@@ -889,6 +915,9 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.chara_decay = chara_decay
                     CFGDenoiser.process_p = p
                     CFGDenoiser.radio_controlnet = radio
+                    constrain_step = lambda total_step, step_pct: max(0, min(round(total_step * step_pct), total_step))
+                    CFGDenoiser.chg_start_step = constrain_step(p.steps, start_step)
+                    CFGDenoiser.chg_stop_step = constrain_step(p.steps, stop_step)
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
                         print("Characteristic Guidance sampling:")
