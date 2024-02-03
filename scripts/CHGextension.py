@@ -747,13 +747,13 @@ class ExtensionTemplateScript(scripts.Script):
             with gr.Row(open=True):
                 start_step = gr.Slider(
                     minimum=0.0,
-                    maximum=1.0,
+                    maximum=0.25,
                     step=0.01,
                     value=0.0,
                     label="CHG Start Step ( → Use CFG before Percent of Steps, Closer to Classifier-Free.)",
                 )
                 stop_step = gr.Slider(
-                    minimum=0.0,
+                    minimum=0.25,
                     maximum=1.0,
                     step=0.01,
                     value=1.0,
@@ -882,7 +882,7 @@ class ExtensionTemplateScript(scripts.Script):
                     if self.start_step <= self.step < self.stop_step:
                         return CHGDenoiser.forward(self, *args, **kwargs)
                     else:
-                        return original_forward(self, *args, **kwargs)
+                        return CFGDenoiser.forward(self, *args, **kwargs)
                 # modules = sys.modules
                 if checkbox:
                     # from ssd_samplers_chg_denoiser import CFGDenoiser as CHGDenoiser
