@@ -599,11 +599,13 @@ class ExtensionTemplateScript(scripts.Script):
             reg_ini = CFGDenoiser.reg_ini
             reg_range = CFGDenoiser.reg_range 
             noise_base = CFGDenoiser.noise_base
+            start_step = CFGDenoiser.chg_start_step
         except:
             res_thres = 0.1
             reg_ini=1
             reg_range=1
             noise_base = 1
+            start_step = 0
         # Create legend
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='green', label='Converged'),
@@ -661,7 +663,7 @@ class ExtensionTemplateScript(scripts.Script):
                 pos_no_converge = pos_no_converge/(len(res[i])+1)
                 # Categorize each result and assign colors
                 colors = ['green' if r < res_thres else 'yellow' if r < 10 * res_thres else 'red' for r in res[i]]
-                axs[i].bar(range(len(ite_num[i])), ite_num[i], color=colors)
+                axs[i].bar(np.arange(len(ite_num[i]))+start_step, ite_num[i], color=colors)
                 # Create legend
                 axs[i].legend(handles=legend_elements, loc='upper right')
 
@@ -669,7 +671,7 @@ class ExtensionTemplateScript(scripts.Script):
                 axs[i].set_xlabel('Diffusion Step')
                 axs[i].set_ylabel('Num. Characteristic Iteration')
                 ax2 = axs[i].twinx()
-                ax2.plot(range(len(ite_num[i])), reg[i], linewidth=4, color='C1', label='Regularization Level')
+                ax2.plot(np.arange(len(ite_num[i]))+start_step, reg[i], linewidth=4, color='C1', label='Regularization Level')
                 ax2.set_ylabel('Regularization Level')
                 ax2.set_ylim(bottom=0.)
                 ax2.legend(loc='upper left')
@@ -686,7 +688,7 @@ class ExtensionTemplateScript(scripts.Script):
                     pos_no_converge = max(j,pos_no_converge)
             pos_no_converge = pos_no_converge/(len(res[0])+1)
             colors = ['green' if r < res_thres else 'yellow' if r < 10 * res_thres else 'red' for r in res[0]]
-            axs.bar(range(len(ite_num[0])), ite_num[0], color=colors)
+            axs.bar(np.arange(len(ite_num[0]))+start_step, ite_num[0], color=colors)
             # Create legend
             axs.legend(handles=legend_elements, loc='upper right')
 
@@ -695,7 +697,7 @@ class ExtensionTemplateScript(scripts.Script):
             axs.set_ylabel('Num. Characteristic Iteration')
             ax2 = axs.twinx()
             title = get_title(reg_ini, reg_range, noise_base, num_no_converge, pos_no_converge)
-            ax2.plot(range(len(ite_num[0])), reg[0], linewidth=4, color='C1', label='Regularization Level')
+            ax2.plot(np.arange(len(ite_num[0]))+start_step, reg[0], linewidth=4, color='C1', label='Regularization Level')
             ax2.set_ylabel('Regularization Level')
             ax2.set_ylim(bottom=0.)
             ax2.legend(loc='upper left')
@@ -878,16 +880,16 @@ class ExtensionTemplateScript(scripts.Script):
                       checkbox, markdown, radio, start_step, stop_step, **kwargs):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
-                def _call_forward(self, *args, **kwargs):
-                    if self.chg_start_step <= self.step < self.chg_stop_step:
-                        return CHGDenoiser.forward(self, *args, **kwargs)
-                    else:
-                        return CFGDenoiser.forward(self, *args, **kwargs)
                 # modules = sys.modules
                 if checkbox:
                     # from ssd_samplers_chg_denoiser import CFGDenoiser as CHGDenoiser
                     print("Characteristic Guidance injecting the CFGDenoiser")
                     original_forward = CFGDenoiser.forward
+                    def _call_forward(self, *args, **kwargs):
+                        if self.chg_start_step <= self.step < self.chg_stop_step:
+                            return CHGDenoiser.forward(self, *args, **kwargs)
+                        else:
+                            return original_forward(self, *args, **kwargs)
                     CFGDenoiser.forward = _call_forward
                     CFGDenoiser.Chara_iteration = CHGDenoiser.Chara_iteration
                     CFGDenoiser.res_thres = 10 ** res
