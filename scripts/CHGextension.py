@@ -715,7 +715,7 @@ class ExtensionTemplateScript(scripts.Script):
 
     # Setup menu ui detail
     def ui(self, is_img2img):
-        with gr.Accordion('Characteristic Guidance', open=False):
+        with gr.Accordion('Characteristic Guidance (CHG)', open=False):
             reg_ini = gr.Slider(
                 minimum=0.0,
                 maximum=10.,
@@ -750,14 +750,14 @@ class ExtensionTemplateScript(scripts.Script):
                     maximum=0.25,
                     step=0.01,
                     value=0.0,
-                    label="CHG Start Step ( → Use CFG before Percent of Steps, Closer to Classifier-Free.)",
+                    label="CHG Start Step ( Use CFG before Percent of Steps. )",
                 )
                 stop_step = gr.Slider(
                     minimum=0.25,
                     maximum=1.0,
                     step=0.01,
                     value=1.0,
-                    label="CHG End Step ( → Use CFG after Percent of Steps, Closer to Classifier-Free.)",
+                    label="CHG End Step ( Use CFG after Percent of Steps. )",
                 )
             with gr.Accordion('Advanced', open=False):
                 chara_decay = gr.Slider(
