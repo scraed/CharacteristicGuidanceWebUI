@@ -879,7 +879,7 @@ class ExtensionTemplateScript(scripts.Script):
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 def _call_forward(self, *args, **kwargs):
-                    if self.start_step <= self.step < self.stop_step:
+                    if self.chg_start_step <= self.step < self.chg_stop_step:
                         return CHGDenoiser.forward(self, *args, **kwargs)
                     else:
                         return CFGDenoiser.forward(self, *args, **kwargs)
@@ -914,8 +914,8 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.process_p = p
                     CFGDenoiser.radio_controlnet = radio
                     constrain_step = lambda total_step, step_pct: max(0, min(round(total_step * step_pct), total_step))
-                    CFGDenoiser.start_step = constrain_step(p.steps, start_step)
-                    CFGDenoiser.stop_step = constrain_step(p.steps, stop_step)
+                    CFGDenoiser.chg_start_step = constrain_step(p.steps, start_step)
+                    CFGDenoiser.chg_stop_step = constrain_step(p.steps, stop_step)
                     # CFGDenoiser.CFGdecayS = CFGdecayS
                     try:
                         print("Characteristic Guidance sampling:")
