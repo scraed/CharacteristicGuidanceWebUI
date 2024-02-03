@@ -68,6 +68,8 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 - `Regularization Range Over Time`: Range 0.01 to 10.0 (default: 1). Modifies the range of time being regularized, larger time means slow decay in regularization strength hence more time steps being regularized, affecting convergence difficulty and the extent of correction.
 - `Max Num. Characteristic Iteration`: Range 1 to 50 (default: 50). Determines the maximum number of characteristic iterations per sampling time step.
 - `Num. Basis for Correction`: Range 0 to 10 (default: 0). Sets the number of bases for correction, influencing the amount of correction and convergence behavior. More basis means better quality but harder convergence. Basis number = 0 means batch-wise correction, > 0 means channel-wise correction. 
+- `CHG Start Step`: Range 0 to 0.25 (default: 0). Characteristic guidance begins to influence the process from the specified percentage of steps, indicated by `CHG Start Step`.
+- `CHG End Step`: Range 0.25 to 1 (default: 0). Characteristic guidance ceases to have an effect from the specified percentage of steps, denoted by `CHG End Step`. Setting this value to approximately 0.4 can significantly speed up the generation process without substantially altering the outcome.
 - `ControlNet Compatible Mode`
   - `More Prompt`: Controlnet is turned off when iteratively solving characteristic guidance correction.
   - `More ControlNet`: Controlnet is turned on when iteratively solving characteristic guidance correction.
@@ -98,6 +100,11 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+### February 3, 2024: New parameters accelerating the generation.
+- **Thanks to [@v0xie](https://github.com/v0xie)**: The UI now supports two more parameters.
+- `CHG Start Step`: Range 0 to 0.25 (default: 0). Characteristic guidance begins to influence the process from the specified percentage of steps, indicated by `CHG Start Step`.
+- `CHG End Step`: Range 0.25 to 1 (default: 0). Characteristic guidance ceases to have an effect from the specified percentage of steps, denoted by `CHG End Step`. Setting this value to approximately 0.4 can significantly **speed up** the generation process without substantially altering the outcome.
+
 ### January 28, 2024: Modify how parameter `Reuse Correction of Previous Iteration` works
 - **Effect**: Move parameter `Reuse Correction of Previous Iteration` to advanced parameters. Its default value is set to 1 to accelerate convergence. It is now using the same update direction as the case `Reuse Correction of Previous Iteration` = 0 regardless of its value. 
 - **User Action Required**: Please delete "ui-config.json" from the stable diffusion WebUI root directory for the update to take effect.
