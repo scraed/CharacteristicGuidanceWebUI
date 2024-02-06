@@ -1,7 +1,7 @@
 # Characteristic Guidance Web UI (enhanced sampling for high CFG scale)
 
 ## About
-Characteristic Guidance Web UI is an extension of for the Stable Diffusion web UI (AUTOMATIC1111). It offers a theory-backed guidance sampling method with improved sample and control quality at high CFG scale (10-30).
+Characteristic Guidance Web UI is an extension of for the Stable Diffusion web UI (AUTOMATIC1111). It offers a theory-backed guidance sampling method with improved sample and control quality at high CFG scale (10-30). Official implementation of [Arxiv 2312.07586](https://arxiv.org/abs/2312.07586).
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
