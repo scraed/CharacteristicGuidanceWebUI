@@ -78,7 +78,7 @@ Below are the parameters you can adjust to customize the behavior of the guidanc
 - `Reuse Correction of Previous Iteration`: Range 0.0 to 1.0 (default: 1.0). Controls the reuse of correction from previous iterations to reduce abrupt changes during generation.
 - `Log 10 Tolerance for Iteration Convergence`: Range -6 to -2 (default: -4). Adjusts the tolerance for iteration convergence, trading off between speed and image quality.
 - `Iteration Step Size`: Range 0 to 1 (default: 1.0). Sets the step size for each iteration, affecting the speed of convergence.
-- `Regularization Annealing Speed`: Range 0.0 to 1.0 (default: 0.4). Controls the speed of regularization annealing (We set regularization to 5 then let it decay to specified regularization strength, annealing speed determines how fast the decay rate). Smaller speed potentially easing convergence.
+- `Regularization Annealing Speed`: Range 0.0 to 1.0 (default: 0.4). How fast the regularization strength decay to desired rate. Smaller value potentially easing convergence.
 - `Regularization Annealing Strength`: Range 0.0 to 5 (default: 0.5). Determines the how important regularization annealing is in characteristic guidance interations. Higher value means higher priority to bring regularization level to specified regularization strength. Affecting the balance between annealing and convergence.
 - `AA Iteration Memory Size`: Range 1 to 10 (default: 2). Specifies the memory size for AA (Anderson Acceleration) iterations, influencing convergence speed and stability.
 
