@@ -318,6 +318,7 @@ class ExtensionTemplateScript(scripts.Script):
                 return d.get('CHG', {}).get(key, default)
             return get_parameters
 
+
         self.infotext_fields = [
             (checkbox, lambda d: 'CHG' in d),
             (reg_ini, get_chg_parameter('RegS')),
@@ -366,6 +367,7 @@ class ExtensionTemplateScript(scripts.Script):
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
                       checkbox, markdown, radio, start_step, stop_step, **kwargs):
+        print('*********process batch*********')
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 # modules = sys.modules
@@ -382,6 +384,7 @@ class ExtensionTemplateScript(scripts.Script):
                             return original_forward(self, *args, **kwargs)
                     CFGDenoiser.forward = _call_forward
                     #CFGDenoiser.Chara_iteration = Chara_iteration
+                    print('*********cfg denoiser res thres def ************')
                     CFGDenoiser.res_thres = 10 ** res
                     CFGDenoiser.noise_base = noise_base
                     CFGDenoiser.lr_chara = lr
