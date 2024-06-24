@@ -186,6 +186,7 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
     eps_evaluation, v_evaluation, eps_legacy_evaluation, evaluation = evaluations
     if isForge:
         model,dxs,x_in, sigma_in,cond_scale,uncond, c = ite_paras
+        sigma_in = sigma_in.to(x_in.device)
     else:
         dxs, x_in, sigma_in, tensor, uncond, cond_scale, image_cond_in, is_edit_model, skip_uncond, make_condition_dict, batch_cond_uncond, batch_size, cond_in, x_out = ite_paras
     if dxs is None:
