@@ -14,7 +14,7 @@ Characteristic guidance offers improved sample generation and control at high CF
   - Bad anatomy (not guaranteed :rofl:, works better on Stable Diffusion XL)
   - Strange backgrounds
     
-Characteristic guidance is compatible with every existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for ControlNet.
+Characteristic guidance is compatible with every existing sampling methods in Stable Diffusion WebUI. It now have preliminary support for **Forge UI** and ControlNet.
 ![1girl running mountain grass](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%2C%20running%2C%20mountain%2C%20grass.jpg?raw=true) 
 ![newspaper news english](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/newspaper%20news%20english.jpg?raw=true)
 ![1girl, handstand, sports, close_up](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl%20handstand%20sports%20close_up.jpg?raw=true)
@@ -103,6 +103,11 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+### June 24, 2024: Preliminary Support for Forge.
+- **Thanks to [@charrywhite](https://github.com/charrywhite)**: The UI now have preliminary supports [forge](https://github.com/lllyasviel/stable-diffusion-webui-forge).
+- Fixed minor incompatibility with WebUI v1.9
+
+
 ### February 3, 2024: New parameters accelerating the generation.
 - **Thanks to [@v0xie](https://github.com/v0xie)**: The UI now supports two more parameters.
 - `CHG Start Step`: Range 0 to 0.25 (default: 0). Characteristic guidance begins to influence the process from the specified percentage of steps, indicated by `CHG Start Step`.
@@ -143,6 +148,10 @@ Here is my recommended approach for parameter setting:
 
 
 ## Compatibility and Issues
+
+### June 24, 2024: Inconsistent Forge Implementation.
+- Note that the current forge implementation of CHG does not always generate the same image as CHG on WebUI. See this [pull request](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/13). We are still investigating why it happends.
+
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
