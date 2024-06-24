@@ -151,7 +151,7 @@ Here is my recommended approach for parameter setting:
 
 ### June 24, 2024: Inconsistent Forge Implementation.
 - Note that the current forge implementation of CHG does not always generate the same image as CHG on WebUI. See this [pull request](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/13). We are still investigating why it happends.
-
+- The current forge implementation does not work well with the built in Controlnet on Forge.
 
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
