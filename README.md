@@ -104,7 +104,7 @@ Here is my recommended approach for parameter setting:
 
 ## Updates
 ### June 24, 2024: Preliminary Support for Forge.
-- **Thanks to [@charrywhite](https://github.com/charrywhite)**: The UI now have preliminary supports [forge](https://github.com/lllyasviel/stable-diffusion-webui-forge).
+- **Thanks to our team member [@charrywhite](https://github.com/charrywhite)**: The UI now have preliminary supports [forge](https://github.com/lllyasviel/stable-diffusion-webui-forge).
 - Fixed minor incompatibility with WebUI v1.9
 
 
