@@ -22,14 +22,14 @@ from modules.sd_samplers_cfg_denoiser import  catenate_conds, subscript_cond, pa
 from modules import script_callbacks
 
 import k_diffusion.utils as utils_old
-from ldm_patched.modules.conds import CONDRegular, CONDCrossAttn
-from ldm_patched.modules import model_management
-from ldm_patched.modules.ops import cleanup_cache
-from ldm_patched.modules.samplers import *
 
 try:
     from modules_forge import forge_sampler
     from modules_forge.forge_sampler import *
+    from ldm_patched.modules.conds import CONDRegular, CONDCrossAttn
+    from ldm_patched.modules import model_management
+    from ldm_patched.modules.ops import cleanup_cache
+    from ldm_patched.modules.samplers import *
     isForge = True
 except Exception:
     isForge = False
