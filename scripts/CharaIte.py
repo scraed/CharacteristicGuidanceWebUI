@@ -20,6 +20,7 @@ from k_diffusion.external import CompVisVDenoiser, CompVisDenoiser
 from modules.sd_samplers_timesteps import CompVisTimestepsDenoiser, CompVisTimestepsVDenoiser
 from modules.sd_samplers_cfg_denoiser import CFGDenoiser, catenate_conds, subscript_cond, pad_cond
 from modules import script_callbacks
+import copy
 
 try:
     from modules_forge import forge_sampler
@@ -92,6 +93,7 @@ def proj_least_squares(A, B, reg):
 
 
 def Chara_iteration(self, *args, **kwargs):
+    # print('Chara_iteration Working')
     if not isForge:
         dxs, x_in, sigma_in, tensor, uncond, cond_scale, image_cond_in, is_edit_model, skip_uncond, make_condition_dict, batch_cond_uncond, batch_size = args 
         cond_in=kwargs["cond_in"]
@@ -148,44 +150,56 @@ def Chara_iteration(self, *args, **kwargs):
             return evaluation(x_out_evaluation, x_in + dxs_add, (tensor, uncond, cond_in), sigma_in, image_cond_in)
     else:
         model,dxs,x_in, sigma_in,cond_scale,uncond, c = args
-        def evaluation(func, x_in, t_in, c_concat=None, c_crossattn=None, control=None, transformer_options={}, *args, **kwargs):
+        # print('dxs', dxs)
+        # print('x_in', (x_in.dtype))
+        # print('x_in',(x_in))
+        # print('sigma_in',sigma_in)
+        # print('cond_scale',cond_scale)
+        # print('uncond',uncond)
+        def evaluation(func, x_in, t_in, c):
             # tensor, uncond, cond_in = conds
             # print('x_in eval',x_in.shape)
-            return func(x_in, t_in, c_concat, c_crossattn, control, transformer_options, *args, **kwargs)
+            return func(x_in, t_in, c)
 
-        def eps_evaluation(x_in, t_in, c_concat=None, c_crossattn=None, control=None, transformer_options={}):
-            # print('c concat',c_concat.shape)
-            # print('c_crossattn 0',(c_crossattn)[0][:10])
-            # print('c_crossattn 1', (c_crossattn)[1][:10])
-            #print('model eps evaluation')
-            x_out = model.apply_model(x_in,t_in, c_concat, c_crossattn, control, transformer_options)
+        def eps_evaluation(x_in, t_in, c):
+            # print('x_in',x_in.dtype)
+            # print('t_in',t_in.dtype)
+            x_out = model.apply_model(x_in,t_in,**c)
+            # print('x_out',x_out.dtype)
             t_in_expand = t_in.view(t_in.shape[:1] + (1,) * (x_in.ndim - 1))
-            eps_out = (x_in - x_out)/t_in_expand
+            eps_out = (x_in - x_out)#/t_in_expand.half() # t_in_expand = ((1- abt)/abt)**0.5
+            # This eps_out here is actually ((1- abt)/abt)**0.5*eps
             return eps_out
 
-        def v_evaluation(x_in, t_in, c_concat=None, c_crossattn=None, control=None, transformer_options={}):
+        def v_evaluation(x_in, t_in, c):
             #print('model v evaluation')
-            x_out = model.apply_model(x_in, t_in, c_concat, c_crossattn, control, transformer_options)
+            x_out = model.apply_model(x_in, t_in, **c)
             t_in_expand = t_in.view(t_in.shape[:1] + (1,) * (x_in.ndim - 1))
             sigma_data = model.model_sampling.sigma_data
             v_out = (x_in* sigma_data**2 - (sigma_data**2 + t_in_expand**2)*x_out)/(t_in_expand*sigma_data*(t_in_expand**2+sigma_data**2)** 0.5)
             return v_out
 
-        def x_out_evaluation(x_in, t_in, c_concat=None, c_crossattn=None, control=None, transformer_options={}):
+        def x_out_evaluation(x_in, t_in, c):
             # t_in_expand = t_in.view(t_in.shape[:1] + (1,) * (x_in.ndim - 1))
             # x_in =  x_in*((t_in_expand ** 2 + 1 ** 2) ** 0.5)
-            x_out = model.apply_model(x_in, t_in, c_concat, c_crossattn, control, transformer_options)
+            # print('x out evaluation control', c['control']['middle'])
+            x_out = model.apply_model(x_in, t_in,**c)
             return x_out
+
+        def eps_legacy_evaluation(x_in, t_in, c):
+            return self.inner_model(x_in, t_in, **c)
             # return self.inner_model.get_eps(x_in, t_in, cond=make_condition_dict(cond_in, image_cond_in))
         evaluations = [eps_evaluation, v_evaluation, None, evaluation]
         ite_paras = [model,dxs,x_in, sigma_in,cond_scale,uncond, c]
         dxs_add = chara_ite_inner_loop(self, evaluations, ite_paras)
-        return evaluation(x_out_evaluation, x_in + dxs_add, sigma_in, **c)
+        # print('dxs_add',dxs_add)
+        return evaluation(x_out_evaluation, x_in + dxs_add, sigma_in, c)
 
 def chara_ite_inner_loop(self, evaluations, ite_paras):
     eps_evaluation, v_evaluation, eps_legacy_evaluation, evaluation = evaluations
     if isForge:
         model,dxs,x_in, sigma_in,cond_scale,uncond, c = ite_paras
+        # print('inside inner loop control',c['control']['middle'])
         sigma_in = sigma_in.to(x_in.device)
     else:
         dxs, x_in, sigma_in, tensor, uncond, cond_scale, image_cond_in, is_edit_model, skip_uncond, make_condition_dict, batch_cond_uncond, batch_size, cond_in, x_out = ite_paras
@@ -205,26 +219,39 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
     res_thres = self.res_thres
     
     num_x_in_cond = len(x_in[:-uncond.shape[0]])//len(dxs)
-    
+    # print('x_in',x_in.shape)
+    # print('uncond',uncond.shape[0])
     h = cond_scale*num_x_in_cond
 
     if isinstance(self.inner_model, CompVisDenoiser):
-        t_in = self.inner_model.sigma_to_t(sigma_in)
+        # print('sigma_in',sigma_in.device)
+        # print('inner model log sigma',self.inner_model.log_sigmas.device)
+        t_in = self.inner_model.sigma_to_t(sigma_in.to(self.inner_model.log_sigmas.device),quantize=True)
         abt = self.inner_model.inner_model.alphas_cumprod.to(t_in.device)[t_in.long()]
         c_out, c_in = [utils.append_dims(x, x_in.ndim) for x in self.inner_model.get_scalings(sigma_in)]
     elif isinstance(self.inner_model, CompVisVDenoiser):
-        t_in = self.inner_model.sigma_to_t(sigma_in)
+        t_in = self.inner_model.sigma_to_t(sigma_in.to(self.inner_model.log_sigmas.device),quantize=True)
         abt = self.inner_model.inner_model.alphas_cumprod.to(t_in.device)[t_in.long()]
         c_skip, c_out, c_in = [utils.append_dims(x, x_in.ndim) for x in self.inner_model.get_scalings(sigma_in)]
     elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
                                                                                 CompVisTimestepsVDenoiser):
-        t_in = sigma_in
-        abt = self.alphas[t_in.long()]
+        if isForge:
+            abt_table = self.alphas
+            def timestep(sigma,abt_table):
+                abt = (1/(1+sigma**2)).to(sigma.device)
+                dists = abt - abt_table[:, None]
+                return dists.abs().argmin(dim=0).view(sigma.shape).to(sigma.device)
+            t_in = timestep(sigma_in,abt_table)
+            print('timestep t_in',t_in)
+        else:
+            t_in = sigma_in
+        abt = self.alphas.to(t_in.device)[t_in.long()]
     else:
         raise NotImplementedError()
 
 
     scale = ((1 - abt) ** 0.5)[-uncond.shape[0]:, None, None, None].to(x_in.device)
+    scale_f = ((abt) ** 0.5)[-uncond.shape[0]:, None, None, None].to(x_in.device)
     abt_current = abt[-uncond.shape[0]:, None, None, None].to(x_in.device)
     abt_smallest = self.inner_model.inner_model.alphas_cumprod[-1].to(x_in.device)
     # x_in_cond = x_in[:-uncond.shape[0]]
@@ -323,26 +350,41 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         dxs = self.chara_decay * dxs
     iteration_counts = 0
     for iteration in range(n_iterations):
+        # print(f'********* ite {iteration} *********')
         # important to keep iteration content consistent
         # Supoort AND prompt combination by using multiple dxs for condition part
         def compute_correction_direction(dxs):
+            c_copy = copy.deepcopy(c)
+            # print('num_x_in_cond',num_x_in_cond)
+            # print('(h - 1) * dxs[:,None,...]', ((h - 1) * dxs[:,None,...]).shape)
             dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
             dxs_add = torch.cat([ dxs_cond_part, h * dxs], axis=0)
             if isinstance(self.inner_model, CompVisDenoiser):
                 if isForge:
-                    eps_out = evaluation(eps_evaluation, x_in + dxs_add, sigma_in,**c)
+                    eps_out = evaluation(eps_evaluation, x_in + dxs_add, sigma_in,c_copy)
                     pred_eps_uncond = eps_out[:-uncond.shape[0]] # forge: c_crossatten[0]: uncondition
                     eps_cond_batch = eps_out[-uncond.shape[0]:] # forge: c_crossatten[1]: condition
+                    # print('pred_eps_uncond', pred_eps_uncond.dtype)
+                    # print('eps_cond_batch', eps_cond_batch.dtype)
+                    eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                    pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
+                    # print("scale_f", scale_f)
+                    # print('(pred_eps_uncond - pred_eps_cond)',(pred_eps_uncond - pred_eps_cond))
+                    # print('pred_eps_cond', pred_eps_cond)
+                    # print('scale/c_in',scale / c_in[-uncond.shape[0]:])
+                    # print("c_in", c_in[-uncond.shape[0]:])
+                    ggg = (pred_eps_uncond - pred_eps_cond) #* (scale / c_in[-uncond.shape[0]:])
+                    # print('ggg',ggg)
                 else:
                     eps_out = evaluation(eps_evaluation, x_in * c_in + dxs_add * c_in, (tensor, uncond, cond_in), t_in, image_cond_in)
                     pred_eps_uncond = eps_out[-uncond.shape[0]:]
                     eps_cond_batch = eps_out[:-uncond.shape[0]]
-                eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
-                pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
-                ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
+                    eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                    pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
+                    ggg = (pred_eps_uncond - pred_eps_cond) * scale / c_in[-uncond.shape[0]:]
             elif isinstance(self.inner_model, CompVisVDenoiser):
                 if isForge:
-                    v_out = evaluation(v_evaluation, x_in+dxs_add,sigma_in, **c)
+                    v_out = evaluation(v_evaluation, x_in+dxs_add,sigma_in,c_copy)
                     eps_out = -c_out*x_in + c_skip**0.5*v_out
                     pred_eps_uncond = eps_out[:-uncond.shape[0]] # forge: c_crossatten[0]: uncondition
                     eps_cond_batch = eps_out[-uncond.shape[0]:] # forge: c_crossatten[1]: condition
@@ -357,17 +399,30 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
             elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
                                                                                     CompVisTimestepsVDenoiser):
                 #eps_out = self.inner_model(x_in + dxs_add, t_in, cond=cond)
-                eps_out = evaluation(eps_legacy_evaluation, x_in + dxs_add, (tensor, uncond, cond_in), t_in, image_cond_in)
-                pred_eps_uncond = eps_out[-uncond.shape[0]:]
-                eps_cond_batch = eps_out[:-uncond.shape[0]]
-                eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
-                pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
-                ggg = (pred_eps_uncond - pred_eps_cond) * scale
+                if isForge:
+                    eps_out = evaluation(eps_evaluation, x_in + dxs_add, sigma_in, c_copy)
+                    pred_eps_uncond = eps_out[:-uncond.shape[0]]  # forge: c_crossatten[0]: uncondition
+                    eps_cond_batch = eps_out[-uncond.shape[0]:]  # forge: c_crossatten[1]: condition
+                    # print('pred_eps_uncond', pred_eps_uncond.dtype)
+                    # print('eps_cond_batch', eps_cond_batch.dtype)
+                    eps_cond_batch_target_shape = (
+                    len(eps_cond_batch) // num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]))
+                    pred_eps_cond = torch.mean(eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False)
+                    ggg = (pred_eps_uncond - pred_eps_cond)  # * (scale / c_in[-uncond.shape[0]:])
+                else:
+                    eps_out = evaluation(eps_legacy_evaluation, x_in + dxs_add, (tensor, uncond, cond_in), t_in, image_cond_in)
+                    pred_eps_uncond = eps_out[-uncond.shape[0]:]
+                    eps_cond_batch = eps_out[:-uncond.shape[0]]
+                    eps_cond_batch_target_shape = ( len(eps_cond_batch)//num_x_in_cond, num_x_in_cond, *(eps_cond_batch.shape[1:]) )
+                    pred_eps_cond = torch.mean( eps_cond_batch.view(eps_cond_batch_target_shape), dim=1, keepdim=False )
+                    ggg = (pred_eps_uncond - pred_eps_cond) * scale
             else:
                 raise NotImplementedError()
             return ggg
 
+        # dxs = 0*dxs # for debug, need to command
         ggg = compute_correction_direction(dxs)
+        # print('ggg',ggg)
         # print("print(reg_level.shape)", reg_level.shape)
         g = dxs - downsample_reg_g(ggg, g_1, reg_level)
         if g_1 is None:
