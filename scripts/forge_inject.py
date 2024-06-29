@@ -22,15 +22,14 @@ from modules.sd_samplers_cfg_denoiser import  catenate_conds, subscript_cond, pa
 from modules import script_callbacks
 
 import k_diffusion.utils as utils_old
-
+from ldm_patched.modules.conds import CONDRegular, CONDCrossAttn
+from ldm_patched.modules import model_management
+from ldm_patched.modules.ops import cleanup_cache
+from ldm_patched.modules.samplers import *
 
 try:
     from modules_forge import forge_sampler
     from modules_forge.forge_sampler import *
-    from ldm_patched.modules.conds import CONDRegular, CONDCrossAttn
-    from ldm_patched.modules import model_management
-    from ldm_patched.modules.ops import cleanup_cache
-    from ldm_patched.modules.samplers import *
     isForge = True
 except Exception:
     isForge = False
@@ -136,6 +135,7 @@ def calc_cond_uncond_batch(self,model, cond, uncond, x_in, timestep, model_optio
         c['transformer_options'] = transformer_options
 
         if control is not None:
+            print('control is running')
             p = control
             while p is not None:
                 p.transformer_options = transformer_options
@@ -150,6 +150,7 @@ def calc_cond_uncond_batch(self,model, cond, uncond, x_in, timestep, model_optio
         # print('c',c.keys())
         # print('model',model)
         # print('uncond',uncond.shape)
+        # print('control', c['control'])
         if 'model_function_wrapper' in model_options:
             output = model_options['model_function_wrapper'](model.apply_model, {"input": input_x, "timestep": timestep_, "c": c, "cond_or_uncond": cond_or_uncond}).chunk(batch_chunks)
         else:
@@ -179,12 +180,13 @@ def calc_cond_uncond_batch(self,model, cond, uncond, x_in, timestep, model_optio
     del out_uncond_count
     return out_cond, out_uncond
 def sampling_function(self,model, x, timestep, uncond, cond, cond_scale, model_options={}, seed=None):
-    print('*********** running sampling function *********** ')
+    # print('*********** running sampling function *********** ')
     edit_strength = sum((item['strength'] if 'strength' in item else 1) for item in cond)
     if math.isclose(cond_scale, 1.0) and model_options.get("disable_cfg1_optimization", False) == False:
         uncond_ = None
     else:
         uncond_ = uncond
+
 
     for fn in model_options.get("sampler_pre_cfg_function", []):
         # print('time step before',timestep)
