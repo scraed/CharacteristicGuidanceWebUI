@@ -354,7 +354,8 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         # important to keep iteration content consistent
         # Supoort AND prompt combination by using multiple dxs for condition part
         def compute_correction_direction(dxs):
-            c_copy = copy.deepcopy(c)
+            if isForge:
+                c_copy = copy.deepcopy(c)
             # print('num_x_in_cond',num_x_in_cond)
             # print('(h - 1) * dxs[:,None,...]', ((h - 1) * dxs[:,None,...]).shape)
             dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
