@@ -331,8 +331,9 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
             return dx_proj.reshape(*dx.shape)
     g_1 = None
 
-    reg_level = torch.zeros(dxs.shape[0], device=dxs.device) + max(5,self.reg_ini)
+    
     reg_target_level = self.reg_ini * (abt_smallest / abt_current[:, 0, 0, 0]) ** (1 / self.reg_range)
+    reg_level = torch.zeros(dxs.shape[0], device=dxs.device) + reg_target_level#max(5,self.reg_ini)
     Converged = False
     eps0_ch, eps1_ch = torch.zeros_like(dxs), torch.zeros_like(dxs)
     best_res_el = torch.mean(dxs, dim=(-1, -2, -3), keepdim=True) + 100
@@ -356,6 +357,8 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         def compute_correction_direction(dxs):
             if isForge:
                 c_copy = copy.deepcopy(c)
+            dxs = dxs*scale_f/(self.alpha_reg + scale_f)
+            print(scale_f)
             # print('num_x_in_cond',num_x_in_cond)
             # print('(h - 1) * dxs[:,None,...]', ((h - 1) * dxs[:,None,...]).shape)
             dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
@@ -527,4 +530,4 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
                         controlnet_count += 1
                 except:
                     pass          
-    return dxs_add              
+    return dxs_add          

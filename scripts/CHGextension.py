@@ -206,6 +206,13 @@ class ExtensionTemplateScript(scripts.Script):
     # Setup menu ui detail
     def ui(self, is_img2img):
         with gr.Accordion('Characteristic Guidance (CHG)', open=False):
+            log_alpha_reg = gr.Slider(
+                minimum=-2.,
+                maximum=3.,
+                step=0.1,
+                value=-1.,
+                label="Regularization of the alpha",
+            )
             reg_ini = gr.Slider(
                 minimum=0.0,
                 maximum=10.,
@@ -333,13 +340,14 @@ class ExtensionTemplateScript(scripts.Script):
             (aa_dim, get_chg_parameter('AADim')),
             (radio, get_chg_parameter('CMode')),
             (start_step, get_chg_parameter('StartStep')),
-            (stop_step, get_chg_parameter('StopStep'))
+            (stop_step, get_chg_parameter('StopStep')),
+            (log_alpha_reg, get_chg_parameter('StopStep'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step]
+        return [log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step]
 
-    def process(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
+    def process(self, p, log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
                       checkbox, markdown, radio, start_step, stop_step, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
@@ -358,6 +366,7 @@ class ExtensionTemplateScript(scripts.Script):
                 'CMode': radio,
                 'StartStep': start_step,
                 'StopStep': stop_step,
+                'log_alpha_reg': log_alpha_reg
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
             print("Characteristic Guidance parameters registered")
@@ -365,7 +374,7 @@ class ExtensionTemplateScript(scripts.Script):
     # Extension main process
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
-    def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
+    def process_batch(self, p, log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
                       checkbox, markdown, radio, start_step, stop_step, **kwargs):
         print('*********process batch*********')
         def modified_sample(sample):
@@ -404,6 +413,7 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.ite_infos = [[], [], []]
                     CFGDenoiser.dxs_buffer = None
                     CFGDenoiser.abt_buffer = None
+                    CFGDenoiser.alpha_reg = 10**log_alpha_reg 
                     CFGDenoiser.aa_dim = aa_dim
                     CFGDenoiser.chara_decay = chara_decay
                     CFGDenoiser.process_p = p
