@@ -45,11 +45,11 @@ script_callbacks.on_infotext_pasted(pares_infotext)
 
 
 if not isForge:
-    from extensions.CharacteristicGuidanceWebUI.scripts.webui_inject import CHGdenoiserConstruct
+    from extensions.CharacteristicGuidanceWebUI.scripts.webui_CHG import CHGdenoiserConstruct
     exec( CHGdenoiserConstruct() )
 else:
-    from extensions.CharacteristicGuidanceWebUI.scripts.forge_inject import CHGdenoiserConstruct
-    import extensions.CharacteristicGuidanceWebUI.scripts.forge_inject as forge_inject
+    from extensions.CharacteristicGuidanceWebUI.scripts.forge_CHG import CHGdenoiserConstruct
+    import extensions.CharacteristicGuidanceWebUI.scripts.forge_CHG as forge_CHG
     exec( CHGdenoiserConstruct() )
 
 
@@ -373,7 +373,7 @@ class ExtensionTemplateScript(scripts.Script):
                 # modules = sys.modules
                 if checkbox:
                     # from ssd_samplers_chg_denoiser import CFGDenoiser as CHGDenoiser
-                    print("Characteristic Guidance injecting the CFGDenoiser")
+                    print("Characteristic Guidance modifying the CFGDenoiser")
 
 
                     original_forward = CFGDenoiser.forward

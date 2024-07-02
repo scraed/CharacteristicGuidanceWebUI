@@ -219,7 +219,7 @@ def sampling_function(self,model, x, timestep, uncond, cond, cond_scale, model_o
         args = {"denoised": cfg_result, "cond": cond, "uncond": uncond, "model": model, "uncond_denoised": uncond_pred, "cond_denoised": cond_pred,
                 "sigma": timestep, "model_options": model_options, "input": x}
         cfg_result = fn(args)
-    print("**********Inject Sampling***********")
+    print("**********CHG Sampling***********")
     return cfg_result
 
 #forge_sample_str = inspect.getsource(forge_sampler.forge_sample)
@@ -303,7 +303,7 @@ class CHGDenoiser(CFGDenoiser):
         denoiser_params = CFGDenoiserParams(x, image_cond, sigma, state.sampling_step, state.sampling_steps, cond, uncond, self)
         cfg_denoiser_callback(denoiser_params)
 
-        denoised = forge_inject.forge_sample(self,denoiser_params=denoiser_params,
+        denoised = forge_CHG.forge_sample(self,denoiser_params=denoiser_params,
                                               cond_scale=cond_scale, cond_composition=cond_composition)
 
         if self.mask is not None:
@@ -321,7 +321,7 @@ class CHGDenoiser(CFGDenoiser):
         if self.classic_ddim_eps_estimation:
             eps = (x - denoised) / sigma[:, None, None, None]
             return eps
-        print("*****CHG inject success*****")
+        print("*****CHG ini success*****")
 
         return denoised.to(device=original_x_device, dtype=original_x_dtype)
 '''
