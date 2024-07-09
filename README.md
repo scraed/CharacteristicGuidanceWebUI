@@ -7,7 +7,7 @@ This is the official implementation of [Characteristic Guidance: Non-linear Corr
 
 ## News
 
-We release the Turbo version of characteristic guidance. It implements speed optimization (~2x faster) and stability improvement (better convergence at initial steps). Please try the branch Turbo_dev.
+We release the Turbo version of characteristic guidance. It implements speed optimization (~2x faster) and stability improvement (better convergence at initial steps). Please try the branch Turbo_dev. （If you are forge user, please use Karras schedule or unipic to avoid artifacts）
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
