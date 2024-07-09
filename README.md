@@ -7,7 +7,7 @@ This is the official implementation of [Characteristic Guidance: Non-linear Corr
 
 ## News
 
-New version with speed optimization (~2x faster) and stability improvement (better convergence at initial steps) is now call for testing. Please try the branch v1_dev.
+We release the Turbo version of characteristic guidance. It implements speed optimization (~2x faster) and stability improvement (better convergence at initial steps). Please try the branch Turbo_dev.
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
@@ -106,7 +106,7 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
-### July 9, 2024: Release v1_dev branch.
+### July 9, 2024: Release Turbo_dev branch.
 - New technique to stablize the iteration at beginning steps
 - Avoid redundant iteration steps to accelerate generation. 
 
@@ -157,8 +157,8 @@ Here is my recommended approach for parameter setting:
 
 ## Compatibility and Issues
 
-### July 9, 2024: Bad V1 dev branch output on Forge.
-- The generated images has wierd artifacts on Forge when using V1 dev branch.
+### July 9, 2024: Bad Turbo_dev branch output on Forge.
+- The generated images has wierd artifacts on Forge Turbo_dev. Please use Karras schedule to avoid it.
 
 ### June 24, 2024: Inconsistent Forge Implementation.
 - Note that the current forge implementation of CHG does not always generate the same image as CHG on WebUI. See this [pull request](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/13). We are still investigating why it happends.
