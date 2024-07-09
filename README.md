@@ -106,6 +106,11 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+### July 9, 2024: Release v1_dev branch.
+- New technique to stablize the iteration at beginning steps
+- Avoid redundant iteration steps to accelerate generation. 
+
+
 ### June 24, 2024: Preliminary Support for Forge.
 - **Thanks to our team member [@charrywhite](https://github.com/charrywhite)**: The UI now have preliminary supports [forge](https://github.com/lllyasviel/stable-diffusion-webui-forge).
 - Fixed minor incompatibility with WebUI v1.9
