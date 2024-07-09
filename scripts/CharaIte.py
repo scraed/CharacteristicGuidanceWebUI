@@ -355,6 +355,7 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         if torch.max(scale) <= 1e-3:
             best_dxs = dxs * 0
             not_converged = torch.zeros(dxs.shape[0], device = dxs.device).bool()[:,None,None,None]
+            best_res_el = torch.zeros(dxs.shape[0], device = dxs.device)[:,None,None,None]
             break
         # print(f'********* ite {iteration} *********')
         # important to keep iteration content consistent
