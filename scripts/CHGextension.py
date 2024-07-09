@@ -211,21 +211,7 @@ class ExtensionTemplateScript(scripts.Script):
                 maximum=3.,
                 step=0.1,
                 value=-1.,
-                label="Regularization of the alpha",
-            )
-            reg_ini = gr.Slider(
-                minimum=0.0,
-                maximum=10.,
-                step=0.1,
-                value=1.,
-                label="Regularization Strength ( → Easier Convergence, Closer to Classfier-Free. Please try various values)",
-            )
-            reg_range = gr.Slider(
-                minimum=0.01,
-                maximum=10.,
-                step=0.01,
-                value=1.,
-                label="Regularization Range Over Time ( ← Harder Convergence, More Correction. Please try various values)",
+                label="Regularization ( → Easier Convergence, Closer to Classfier-Free. Please try various values)",
             )
             ite = gr.Slider(
                 minimum=1,
@@ -257,6 +243,20 @@ class ExtensionTemplateScript(scripts.Script):
                     label="CHG End Step ( Use CFG after Percent of Steps. )",
                 )
             with gr.Accordion('Advanced', open=False):
+                reg_ini = gr.Slider(
+                    minimum=0.0,
+                    maximum=10.,
+                    step=0.1,
+                    value=0.0,
+                    label="Legacy Regularization Strength ( → Easier Convergence, Closer to Classfier-Free. Please try various values)",
+                )
+                reg_range = gr.Slider(
+                    minimum=0.01,
+                    maximum=10.,
+                    step=0.01,
+                    value=0.01,
+                    label="Legacy Regularization Range Over Time ( ← Harder Convergence, More Correction. Please try various values)",
+                )
                 chara_decay = gr.Slider(
                     minimum=0.,
                     maximum=1.,
@@ -341,7 +341,7 @@ class ExtensionTemplateScript(scripts.Script):
             (radio, get_chg_parameter('CMode')),
             (start_step, get_chg_parameter('StartStep')),
             (stop_step, get_chg_parameter('StopStep')),
-            (log_alpha_reg, get_chg_parameter('StopStep'))
+            (log_alpha_reg, get_chg_parameter('RegA'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
@@ -366,7 +366,7 @@ class ExtensionTemplateScript(scripts.Script):
                 'CMode': radio,
                 'StartStep': start_step,
                 'StopStep': stop_step,
-                'log_alpha_reg': log_alpha_reg
+                'RegA': log_alpha_reg
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
             print("Characteristic Guidance parameters registered")
@@ -376,7 +376,7 @@ class ExtensionTemplateScript(scripts.Script):
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
                       checkbox, markdown, radio, start_step, stop_step, **kwargs):
-        print('*********process batch*********')
+        #print('*********process batch*********')
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 # modules = sys.modules
