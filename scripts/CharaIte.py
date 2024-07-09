@@ -236,10 +236,10 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
     elif isinstance(self.inner_model, CompVisTimestepsDenoiser) or isinstance(self.inner_model,
                                                                                 CompVisTimestepsVDenoiser):
         if isForge:
-            abt_table = self.alphas.to(sigma.device)
+            abt_table = self.alphas
             def timestep(sigma,abt_table):
                 abt = (1/(1+sigma**2)).to(sigma.device)
-                dists = abt - abt_table[:, None]
+                dists = abt - abt_table.to(sigma.device)[:, None]
                 return dists.abs().argmin(dim=0).view(sigma.shape).to(sigma.device)
             t_in = timestep(sigma_in,abt_table)
             print('timestep t_in',t_in)
