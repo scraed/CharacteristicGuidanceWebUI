@@ -5,6 +5,9 @@ Characteristic Guidance Web UI is an extension of for the Stable Diffusion web U
 
 This is the official implementation of [Characteristic Guidance: Non-linear Correction for Diffusion Model at Large Guidance Scale](https://arxiv.org/abs/2312.07586). We are happy to announce that this work has been accepted by ICML 2024.
 
+## News
+
+New version with speed optimization (~2x faster) and stability improvement (better convergence at initial steps) is now call for testing. Please try the branch v1_dev.
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
