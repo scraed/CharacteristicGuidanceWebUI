@@ -250,7 +250,8 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         raise NotImplementedError()
 
 
-    scale = ((1 - abt) ** 0.5)[-uncond.shape[0]:, None, None, None].to(x_in.device)
+    #scale = ((1 - abt) ** 0.5)[-uncond.shape[0]:, None, None, None].to(x_in.device)
+    scale = ( torch.maximum(1 - self.guide_time*abt, abt*0.) /((1 - abt) ** 0.5))[-uncond.shape[0]:, None, None, None].to(x_in.device)
     scale_f = ((abt) ** 0.5)[-uncond.shape[0]:, None, None, None].to(x_in.device)
     abt_current = abt[-uncond.shape[0]:, None, None, None].to(x_in.device)
     abt_smallest = self.inner_model.inner_model.alphas_cumprod[-1].to(x_in.device)

@@ -227,21 +227,13 @@ class ExtensionTemplateScript(scripts.Script):
                 value=0,
                 label="Num. Basis for Correction ( ← Less Correction, Better Convergence)",
             )
-            with gr.Row(open=True):
-                start_step = gr.Slider(
-                    minimum=0.0,
-                    maximum=0.25,
-                    step=0.01,
-                    value=0.0,
-                    label="CHG Start Step ( Use CFG before Percent of Steps. )",
-                )
-                stop_step = gr.Slider(
-                    minimum=0.25,
-                    maximum=1.0,
-                    step=0.01,
-                    value=1.0,
-                    label="CHG End Step ( Use CFG after Percent of Steps. )",
-                )
+            guide_time = gr.Slider(
+                minimum=0.0,
+                maximum=5.,
+                step=0.01,
+                value=0.,
+                label="The guidance applied time ( ← Slower, More Correction.)",
+            )
             with gr.Accordion('Advanced', open=False):
                 reg_ini = gr.Slider(
                     minimum=0.0,
@@ -257,6 +249,21 @@ class ExtensionTemplateScript(scripts.Script):
                     value=0.01,
                     label="Legacy Regularization Range Over Time ( ← Harder Convergence, More Correction. Please try various values)",
                 )
+                with gr.Row(open=True):
+                    start_step = gr.Slider(
+                        minimum=0.0,
+                        maximum=0.25,
+                        step=0.01,
+                        value=0.0,
+                        label="CHG Start Step ( Use CFG before Percent of Steps. )",
+                    )
+                    stop_step = gr.Slider(
+                        minimum=0.25,
+                        maximum=1.0,
+                        step=0.01,
+                        value=1.0,
+                        label="CHG End Step ( Use CFG after Percent of Steps. )",
+                    )
                 chara_decay = gr.Slider(
                     minimum=0.,
                     maximum=1.,
@@ -341,14 +348,15 @@ class ExtensionTemplateScript(scripts.Script):
             (radio, get_chg_parameter('CMode')),
             (start_step, get_chg_parameter('StartStep')),
             (stop_step, get_chg_parameter('StopStep')),
-            (log_alpha_reg, get_chg_parameter('RegA'))
+            (log_alpha_reg, get_chg_parameter('RegA')),
+            (guide_time, get_chg_parameter('GuideT'))
         ]
 
         # TODO: add more UI components (cf. https://gradio.app/docs/#components)
-        return [log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step]
+        return [log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim, checkbox, markdown, radio, start_step, stop_step, guide_time]
 
     def process(self, p, log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, start_step, stop_step, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, guide_time, **kwargs):
         if checkbox:
             # info text will have to be written hear otherwise params.txt will not have the infotext of CHG
             # write parameters to extra_generation_params["CHG"] as json dict with double and single quotes swapped
@@ -366,7 +374,8 @@ class ExtensionTemplateScript(scripts.Script):
                 'CMode': radio,
                 'StartStep': start_step,
                 'StopStep': stop_step,
-                'RegA': log_alpha_reg
+                'RegA': log_alpha_reg,
+                'GuideT': guide_time
             }
             p.extra_generation_params["CHG"] = json.dumps(parameters).translate(quote_swap)
             print("Characteristic Guidance parameters registered")
@@ -375,7 +384,7 @@ class ExtensionTemplateScript(scripts.Script):
     # Type: (StableDiffusionProcessing, List<UI>) -> (Processed)
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, log_alpha_reg, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
-                      checkbox, markdown, radio, start_step, stop_step, **kwargs):
+                      checkbox, markdown, radio, start_step, stop_step, guide_time, **kwargs):
         #print('*********process batch*********')
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
@@ -398,6 +407,7 @@ class ExtensionTemplateScript(scripts.Script):
                     CFGDenoiser.noise_base = noise_base
                     CFGDenoiser.lr_chara = lr
                     CFGDenoiser.ite = ite
+                    CFGDenoiser.guide_time = np.exp(guide_time)
                     CFGDenoiser.reg_size = reg_size
                     if reg_ini<=5:
                         CFGDenoiser.reg_ini = reg_ini
