@@ -357,7 +357,7 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         def compute_correction_direction(dxs):
             if isForge:
                 c_copy = copy.deepcopy(c)
-            dxs = dxs*scale_f/(self.alpha_reg + scale_f)
+            dxs = dxs*(scale_f/(self.alpha_reg + scale_f))
             # print('num_x_in_cond',num_x_in_cond)
             # print('(h - 1) * dxs[:,None,...]', ((h - 1) * dxs[:,None,...]).shape)
             dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
@@ -513,7 +513,7 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
     self.ite_infos[2].append(reg_target_level)
     print("Characteristic iteration happens", iteration_counts[:, 0, 0, 0] , "times")
     final_dxs = best_dxs * (1 - not_converged.long())
-    final_dxs = final_dxs*scale_f/(self.alpha_reg + scale_f)
+    final_dxs = final_dxs*(scale_f/(self.alpha_reg + scale_f))
     dxs_cond_part = torch.cat( [*( [(h - 1) * final_dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
     dxs_add = torch.cat([ dxs_cond_part, h * final_dxs], axis=0)
     #dxs_add = torch.cat([ *( [(h - 1) * final_dxs,]*num_x_in_cond ), h * final_dxs], axis=0)
