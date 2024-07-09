@@ -367,7 +367,6 @@ class ExtensionTemplateScript(scripts.Script):
     # args is [StableDiffusionProcessing, UI1, UI2, ...]
     def process_batch(self, p, reg_ini, reg_range, ite, noise_base, chara_decay, res, lr, reg_size, reg_w, aa_dim,
                       checkbox, markdown, radio, start_step, stop_step, **kwargs):
-        print('*********process batch*********')
         def modified_sample(sample):
             def wrapper(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength, prompts):
                 # modules = sys.modules
