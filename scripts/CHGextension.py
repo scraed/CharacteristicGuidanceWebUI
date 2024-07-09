@@ -210,7 +210,7 @@ class ExtensionTemplateScript(scripts.Script):
                 minimum=-2.,
                 maximum=3.,
                 step=0.1,
-                value=-1.,
+                value=-1.5,
                 label="Regularization ( → Easier Convergence, Closer to Classfier-Free. Please try various values)",
             )
             noise_base = gr.Slider(
