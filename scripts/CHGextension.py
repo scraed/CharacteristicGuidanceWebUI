@@ -205,20 +205,13 @@ class ExtensionTemplateScript(scripts.Script):
 
     # Setup menu ui detail
     def ui(self, is_img2img):
-        with gr.Accordion('Characteristic Guidance (CHG)', open=False):
+        with gr.Accordion('Characteristic Guidance Turbo (CHG)', open=False):
             log_alpha_reg = gr.Slider(
                 minimum=-2.,
                 maximum=3.,
                 step=0.1,
                 value=-1.,
                 label="Regularization ( → Easier Convergence, Closer to Classfier-Free. Please try various values)",
-            )
-            ite = gr.Slider(
-                minimum=1,
-                maximum=50,
-                step=1,
-                value=50,
-                label="Max Num. Characteristic Iteration ( → Slow but Better Convergence)",
             )
             noise_base = gr.Slider(
                 minimum=0,
@@ -235,6 +228,13 @@ class ExtensionTemplateScript(scripts.Script):
                 label="The guidance target time ( ← Slower, More Correction.)",
             )
             with gr.Accordion('Advanced', open=False):
+                ite = gr.Slider(
+                    minimum=1,
+                    maximum=50,
+                    step=1,
+                    value=50,
+                    label="Max Num. Characteristic Iteration ( → Slow but Better Convergence)",
+                )
                 reg_ini = gr.Slider(
                     minimum=0.0,
                     maximum=10.,
