@@ -231,8 +231,8 @@ class ExtensionTemplateScript(scripts.Script):
                 minimum=0.0,
                 maximum=5.,
                 step=0.01,
-                value=0.,
-                label="The guidance applied time ( ← Slower, More Correction.)",
+                value=0.4,
+                label="The guidance target time ( ← Slower, More Correction.)",
             )
             with gr.Accordion('Advanced', open=False):
                 reg_ini = gr.Slider(

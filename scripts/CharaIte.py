@@ -350,8 +350,12 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         dxs = dxs * ((abt_prev - abt_current * abt_prev) / (abt_current - abt_current * abt_prev))
         # print(abt_prev.shape, abt_current.shape, self.dxs_buffer.shape)
         dxs = self.chara_decay * dxs
-    iteration_counts = 0
+    iteration_counts = torch.zeros_like(scale)
     for iteration in range(n_iterations):
+        if torch.max(scale) <= 1e-3:
+            best_dxs = dxs * 0
+            not_converged = torch.zeros(dxs.shape[0], device = dxs.device).bool()[:,None,None,None]
+            break
         # print(f'********* ite {iteration} *********')
         # important to keep iteration content consistent
         # Supoort AND prompt combination by using multiple dxs for condition part
