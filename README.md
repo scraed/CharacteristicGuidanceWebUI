@@ -158,7 +158,7 @@ Here is my recommended approach for parameter setting:
 ## Compatibility and Issues
 
 ### July 9, 2024: Bad Turbo_dev branch output on Forge.
-- The generated images has wierd artifacts on Forge Turbo_dev. Please use Karras schedule to avoid it.
+- Sometimes the generated images has wierd artifacts on Forge Turbo_dev. Please use Karras schedule to avoid it.
 
 ### June 24, 2024: Inconsistent Forge Implementation.
 - Note that the current forge implementation of CHG does not always generate the same image as CHG on WebUI. See this [pull request](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/13). We are still investigating why it happends.
