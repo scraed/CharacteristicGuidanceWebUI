@@ -20,7 +20,7 @@ from k_diffusion.external import CompVisVDenoiser, CompVisDenoiser
 from modules.sd_samplers_timesteps import CompVisTimestepsDenoiser, CompVisTimestepsVDenoiser
 from modules.sd_samplers_cfg_denoiser import CFGDenoiser, catenate_conds, subscript_cond, pad_cond
 from modules import script_callbacks
-from extensions.CharacteristicGuidanceWebUI.scripts.CharaIte import Chara_iteration
+from scripts.CharaIte import Chara_iteration
 
 try:
     from modules_forge import forge_sampler
@@ -45,11 +45,11 @@ script_callbacks.on_infotext_pasted(pares_infotext)
 
 
 if not isForge:
-    from extensions.CharacteristicGuidanceWebUI.scripts.webui_CHG import CHGdenoiserConstruct
+    from scripts.webui_CHG import CHGdenoiserConstruct
     exec( CHGdenoiserConstruct() )
 else:
-    from extensions.CharacteristicGuidanceWebUI.scripts.forge_CHG import CHGdenoiserConstruct
-    import extensions.CharacteristicGuidanceWebUI.scripts.forge_CHG as forge_CHG
+    from scripts.forge_CHG import CHGdenoiserConstruct
+    import scripts.forge_CHG as forge_CHG
     exec( CHGdenoiserConstruct() )
 
 
