@@ -34,7 +34,7 @@ try:
 except Exception:
     isForge = False
 
-from extensions.CharacteristicGuidanceWebUI.scripts.CharaIte import Chara_iteration
+from scripts.CharaIte import Chara_iteration
 
 # 1st edit by https://github.com/comfyanonymous/ComfyUI
 # 2nd edit by Forge Official
