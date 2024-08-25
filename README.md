@@ -12,7 +12,25 @@ We release the Turbo version of characteristic guidance.
   - Speed optimization (~2x faster)
   - Stability improvement (better convergence at initial steps)
     
-Please try the Turbo version by swiching to the branch Turbo_dev. （If you are forge user, please use Karras schedule or unipic to avoid artifacts）
+Please try the Turbo version by swiching to the branch Turbo_dev. （If you are forge user, please use Karras schedule or unipic to avoid artifacts). How to Use (If you already have Characteristic Guidance Web UI extension installed):
+
+1. **Install and Open [GitHub Desktop](https://desktop.github.com/download/)**  
+   If you haven't installed GitHub Desktop yet, download it from the link above and follow the installation instructions.
+
+2. **Open Local Repository**  
+   - Launch GitHub Desktop.
+   - Click on `File` in the menu and select `Open local repository`, or simply press `Ctrl + O` on your keyboard.
+
+3. **Select the CharacteristicGuidanceWebUI Directory**  
+   - In the file explorer, navigate to the directory where you have installed Stable Diffusion. 
+   - Locate and select the `CharacteristicGuidanceWebUI` folder inside the `extensions` directory:
+     ```
+     [Your Stable Diffusion Directory]\stable-diffusion-webui\extensions\CharacteristicGuidanceWebUI
+     ```
+
+4. **Switch to the Turbo_dev Branch**  
+   - Once the repository is loaded, click on `Current Branch` at the top of the window.
+   - From the dropdown menu, select `Turbo_dev` to switch to that branch.
 
 ## Features
 Characteristic guidance offers improved sample generation and control at high CFG scale. Try characteristic guidance for
