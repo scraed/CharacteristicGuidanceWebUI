@@ -6,6 +6,7 @@ Characteristic Guidance Web UI is an extension of for the Stable Diffusion web U
 This is the official implementation of [Characteristic Guidance: Non-linear Correction for Diffusion Model at Large Guidance Scale](https://arxiv.org/abs/2312.07586). We are happy to announce that this work has been accepted by ICML 2024.
 
 ## News
+We are releasing the [diffusers version](https://colab.research.google.com/drive/1L7Mp3g98o1kTEpt_tAtNcAYpqhfQ3Rl7?usp=sharing) of characteristic guidance for researchers. This version includes a simplified implementation, with fewer engineering tricks for stability and acceleration that can hinder readability. It features detailed comments to make it easier to understand how characteristic guidance works.
 
 We release the Turbo version of characteristic guidance. 
   - Easier to use: much fewer parameters to choose
