@@ -360,6 +360,12 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         dxs = dxs * ((abt_prev - abt_current * abt_prev) / (abt_current - abt_current * abt_prev))
         # print(abt_prev.shape, abt_current.shape, self.dxs_buffer.shape)
         dxs = self.chara_decay * dxs
+        if has_smea_sampling:
+            if dxs.shape[-2:] != x_in.shape[-2:]:
+                # rescale dxs_add into the shape as x_in using torch.nn.functional.interpolate
+                dxs = torch.nn.functional.interpolate(dxs, x_in.shape[-2:], mode='nearest-exact')
+
+
     iteration_counts = torch.zeros_like(scale)
     for iteration in range(n_iterations):
         if torch.max(scale) <= 1e-3:
