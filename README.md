@@ -103,6 +103,9 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+
+### Oct 20, 2024: Fix Compatibility with [Euler SMEA Dy Sampler](https://github.com/Koishi-Star/Euler-Smea-Dyn-Sampler).
+
 ### June 24, 2024: Preliminary Support for Forge.
 - **Thanks to our team member [@charrywhite](https://github.com/charrywhite)**: The UI now have preliminary supports [forge](https://github.com/lllyasviel/stable-diffusion-webui-forge).
 - Fixed minor incompatibility with WebUI v1.9
