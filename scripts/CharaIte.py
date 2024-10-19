@@ -28,6 +28,16 @@ try:
 except Exception:
     isForge = False
 
+import importlib  
+try:
+    smea_sampling = importlib.import_module("extensions.Euler-Smea-Dyn-Sampler.smea_sampling")
+    has_smea_sampling = True
+    print("Characteristic Guidance Detects that SMEA Sampling is installed")
+    print(dir(smea_sampling))
+except Exception:
+    has_smea_sampling = False
+
+
 def solve_least_squares(A, B):
     # print(A.shape)
     # print(B.shape)
