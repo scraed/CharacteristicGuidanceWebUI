@@ -28,6 +28,15 @@ try:
 except Exception:
     isForge = False
 
+import importlib  
+try:
+    smea_sampling = importlib.import_module("extensions.Euler-Smea-Dyn-Sampler.smea_sampling")
+    has_smea_sampling = True
+    print("Characteristic Guidance Detects that SMEA Sampling is installed")
+    print(dir(smea_sampling))
+except Exception:
+    has_smea_sampling = False
+
 def solve_least_squares(A, B):
     # print(A.shape)
     # print(B.shape)
@@ -348,6 +357,11 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
         dxs = dxs * ((abt_prev - abt_current * abt_prev) / (abt_current - abt_current * abt_prev))
         # print(abt_prev.shape, abt_current.shape, self.dxs_buffer.shape)
         dxs = self.chara_decay * dxs
+        if has_smea_sampling:
+            if dxs.shape[-2:] != x_in.shape[-2:]:
+                # rescale dxs_add into the shape as x_in using torch.nn.functional.interpolate
+                dxs = torch.nn.functional.interpolate(dxs, x_in.shape[-2:], mode='nearest-exact')
+
     iteration_counts = 0
     for iteration in range(n_iterations):
         # print(f'********* ite {iteration} *********')
@@ -360,6 +374,7 @@ def chara_ite_inner_loop(self, evaluations, ite_paras):
             # print('(h - 1) * dxs[:,None,...]', ((h - 1) * dxs[:,None,...]).shape)
             dxs_cond_part = torch.cat( [*( [(h - 1) * dxs[:,None,...]]*num_x_in_cond )], axis=1 ).view( (dxs.shape[0]*num_x_in_cond, *dxs.shape[1:]) )
             dxs_add = torch.cat([ dxs_cond_part, h * dxs], axis=0)
+
             if isinstance(self.inner_model, CompVisDenoiser):
                 if isForge:
                     eps_out = evaluation(eps_evaluation, x_in + dxs_add, sigma_in,c_copy)

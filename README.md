@@ -130,6 +130,8 @@ Here is my recommended approach for parameter setting:
 
 
 ## Updates
+### Oct 20, 2024: Fix Compatibility with [Euler SMEA Dy Sampler](https://github.com/Koishi-Star/Euler-Smea-Dyn-Sampler).
+
 ### July 9, 2024: Release Turbo_dev branch.
 - New technique to stablize the iteration at beginning steps
 - Avoid redundant iteration steps to accelerate generation. 
