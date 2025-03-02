@@ -193,13 +193,22 @@ Here is my recommended approach for parameter setting:
 ## Citation
 If you utilize characteristic guidance in your research or projects, please consider citing our paper:
 ```bibtex
-@misc{zheng2023characteristic,
-      title={Characteristic Guidance: Non-linear Correction for DDPM at Large Guidance Scale},
-      author={Candi Zheng and Yuan Lan},
-      year={2023},
-      eprint={2312.07586},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+
+@InProceedings{pmlr-v235-zheng24f,
+  title = 	 {Characteristic Guidance: Non-linear Correction for Diffusion Model at Large Guidance Scale},
+  author =       {Zheng, Candi and Lan, Yuan},
+  booktitle = 	 {Proceedings of the 41st International Conference on Machine Learning},
+  pages = 	 {61386--61412},
+  year = 	 {2024},
+  editor = 	 {Salakhutdinov, Ruslan and Kolter, Zico and Heller, Katherine and Weller, Adrian and Oliver, Nuria and Scarlett, Jonathan and Berkenkamp, Felix},
+  volume = 	 {235},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {21--27 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v235/main/assets/zheng24f/zheng24f.pdf},
+  url = 	 {https://proceedings.mlr.press/v235/zheng24f.html},
+  abstract = 	 {Popular guidance for denoising diffusion probabilistic model (DDPM) linearly combines distinct conditional models together to provide enhanced control over samples. However, this approach overlooks nonlinear effects that become significant when guidance scale is large. To address this issue, we propose characteristic guidance, a guidance method that provides first-principle non-linear correction for classifier-free guidance. Such correction forces the guided DDPMs to respect the Fokker-Planck (FP) equation of diffusion process, in a way that is training-free and compatible with existing sampling methods. Experiments show that characteristic guidance enhances semantic characteristics of prompts and mitigate irregularities in image generation, proving effective in diverse applications ranging from simulating magnet phase transitions to latent space sampling.}
 }
+
 
 
