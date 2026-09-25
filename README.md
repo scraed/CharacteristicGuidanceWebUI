@@ -1,15 +1,19 @@
-# Characteristic Guidance Web UI (enhanced sampling for high CFG scale)
+# Characteristic Guidance WebUI: Training-Free CFG Correction at Large CFG Scales
 
-## About
-Characteristic Guidance Web UI is an extension of for the Stable Diffusion web UI (AUTOMATIC1111). It offers a theory-backed guidance sampling method with improved sample and control quality at high CFG scale (10-30). 
+A Stable Diffusion WebUI extension for training-free, derivative-free nonlinear correction of classifier-free guidance (CFG) at large guidance scales.
 
-This is the official implementation of [Characteristic Guidance: Non-linear Correction for Diffusion Model at Large Guidance Scale](https://arxiv.org/abs/2312.07586). We are happy to announce that this work has been accepted by ICML 2024.
+Characteristic Guidance is the official implementation of [Characteristic Guidance: Non-linear Correction for Diffusion Model at Large Guidance Scale](https://proceedings.mlr.press/v235/zheng24f.html), published at ICML 2024.
+
+The method is designed to improve diffusion sampling when large CFG scales increase prompt adherence but also amplify saturation, exposure, and structural artifacts. It works with existing Stable Diffusion WebUI workflows, including **txt2img** and **img2img**.
+
+The extension also provides preliminary support for **Forge UI** and **ControlNet**. 
 
 ## Documentation
 
 - [Project Page](https://scraed.github.io/CharacteristicGuidance/)
 - [Questions & Answers](https://scraed.github.io/CharacteristicGuidance/qa.html)
 - [Paper on PMLR](https://proceedings.mlr.press/v235/zheng24f.html)
+- [Paper on arXiv](https://arxiv.org/abs/2312.07586)
 
 ## News
 We are releasing the [diffusers version](https://colab.research.google.com/drive/1L7Mp3g98o1kTEpt_tAtNcAYpqhfQ3Rl7?usp=sharing) of characteristic guidance for researchers. This version includes a simplified implementation, with fewer engineering tricks for stability and acceleration that can hinder readability. It features detailed comments to make it easier to understand how characteristic guidance works.
