@@ -19,7 +19,7 @@ We release the Turbo version of characteristic guidance.
   - Speed optimization (~2x faster)
   - Stability improvement (better convergence at initial steps)
     
-Please try the Turbo version by swiching to the branch Turbo_dev. （If you are forge user, please use Karras schedule or unipic to avoid artifacts). How to Use (If you already have Characteristic Guidance Web UI extension installed):
+Please try the Turbo version by switching to the branch Turbo_dev. （If you are forge user, please use Karras schedule or unipic to avoid artifacts). How to Use (If you already have Characteristic Guidance Web UI extension installed):
 
 1. **Install and Open [GitHub Desktop](https://desktop.github.com/download/)**  
    If you haven't installed GitHub Desktop yet, download it from the link above and follow the installation instructions.
@@ -63,7 +63,7 @@ They are distinct and independent methods, can be used either independently or i
 - **Characteristic Guidance**: Corrects both context and color, works at the given CFG scale, iteratively corrects **input** of the U-net according to the Fokker-Planck equation. 
 - **Dynamical Thresholding**:  Mainly focusing on color, works to mimic lower CFG scales, clips and rescales **output** of the U-net.
 
-Using [Characteristic Guidance](#) and Dynamical Thresholding simutaneously may further reduce saturation.
+Using [Characteristic Guidance](#) and Dynamical Thresholding simultaneously may further reduce saturation.
 
 ![1girl_handstand_sportswear_gym](https://github.com/scraed/CharacteristicGuidance/blob/master/static/images/1girl_handstand_sportswear_gym.jpg?raw=true) 
 
@@ -139,7 +139,7 @@ Here is my recommended approach for parameter setting:
 ### Oct 20, 2024: Fix Compatibility with [Euler SMEA Dy Sampler](https://github.com/Koishi-Star/Euler-Smea-Dyn-Sampler).
 
 ### July 9, 2024: Release Turbo_dev branch.
-- New technique to stablize the iteration at beginning steps
+- New technique to stabilize the iteration at beginning steps
 - Avoid redundant iteration steps to accelerate generation. 
 
 
@@ -190,7 +190,7 @@ Here is my recommended approach for parameter setting:
 ## Compatibility and Issues
 
 ### July 9, 2024: Bad Turbo_dev branch output on Forge.
-- Sometimes the generated images has wierd artifacts on Forge Turbo_dev. Please use Karras schedule to avoid it.
+- Sometimes the generated images has weird artifacts on Forge Turbo_dev. Please use Karras schedule to avoid it.
 
 ### June 24, 2024: Inconsistent Forge Implementation.
 - Note that the current forge implementation of CHG does not always generate the same image as CHG on WebUI. See this [pull request](https://github.com/scraed/CharacteristicGuidanceWebUI/pull/13). We are still investigating why it happends.
